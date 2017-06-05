@@ -27,9 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import pl.hycom.pip.messanger.model.Keyword;
+import pl.hycom.pip.messanger.controller.model.KeywordDTO;
 import pl.hycom.pip.messanger.repository.KeywordRepository;
-import pl.hycom.pip.messanger.service.KeywordService;
+import pl.hycom.pip.messanger.repository.model.Keyword;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +142,7 @@ public class KeywordServiceTest {
         List<Keyword> keywords = new ArrayList<>();
         keywords.add(keyword1);
         keywords.add(keyword2);
-        List<Keyword> keywordsFromRepository;
+        List<KeywordDTO> keywordsFromRepository;
 
         // act
         keywordsFromRepository = keywordService.findAllKeywords();

@@ -16,16 +16,17 @@
 
 package pl.hycom.pip.messanger.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import pl.hycom.pip.messanger.model.Keyword;
-import pl.hycom.pip.messanger.model.Product;
 
-import java.util.List;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
 
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Integer>, JpaSpecificationExecutor {

@@ -26,62 +26,53 @@
     <div layout:fragment="content">
 
         <div class="row">
-            <h1 class="page-header">
-                Zarządzanie produktami
-                <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#product-form-modal">Dodaj
-                    nowy produkt
-                </button>
-            </h1>
+    	    <h1 class="page-header">
+        	   	Zarządzanie produktami
+				<button class="btn btn-primary pull-right" data-toggle="modal" data-target="#product-form-modal">Dodaj nowy produkt</button>
+           	</h1>
         </div>
 
         <div th:if="${errors != null}" class="row">
-            <div class="alert alert-danger fade in" th:each="error : ${errors}">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <strong th:text="${error.field}"></strong>: <span th:text="${error.defaultMessage}"></span>
-            </div>
+	         <div class="alert alert-danger fade in" th:each="error : ${errors}">
+    	         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        	     <strong th:text="${error.field}"></strong>: <span th:text="${error.defaultMessage}"></span>
+             </div>
         </div>
 
         <div class="row">
             <div class="table-responsive">
                 <table class="table table-striped table-condensed">
                     <thead>
-                    <th>ID</th>
-                    <th>Nazwa</th>
-                    <th>Opis</th>
-                    <th>Słowa kluczowe</th>
-                    <th>Zdjęcie</th>
-                    <th class="text-center"></th>
-                    <th class="text-center"></th>
+                        <th>ID</th>
+                        <th>Nazwa</th>
+                        <th>Opis</th>
+                        <th>Słowa kluczowe</th>
+                        <th>Zdjęcie</th>
+                        <th class="text-center"></th>
+                        <th class="text-center"></th>
                     </thead>
                     <tbody>
                     <tr th:id="'product-' + ${product.id}" th:each="product : ${products}">
                         <td class="align-middle" th:text="${product.id}">ID</td>
                         <td class="align-middle"><strong th:text="${product.name}">Name</strong></td>
                         <td class="align-middle" th:text="${product.description}">Description</td>
-                        <td class="align-middle"><span class="label label-primary keyword-label"
-                                                       th:each="keyword : ${product.keywords}"
-                                                       th:text="${keyword.word}"></span></td>
+                        <td class="align-middle"><span class="label label-primary keyword-label" th:each="keyword : ${product.keywords}" th:text="${keyword.word}"></span></td>
                         <td class="align-middle">
-                            <a th:href="${product.imageUrl}" target="_blank"><img th:src="${product.imageUrl}"
-                                                                                  width="auto" height="70px"/></a>
+                        	<a th:href="${product.imageUrl}" target="_blank"><img th:src="${product.imageUrl}" width="auto" height="70px"/></a>
                         </td>
                         <td class="align-middle">
-                            <div data-placement="top" data-toggle="tooltip" title="Edytuj">
-                                <button class="btn btn-primary btn-xs button-edit center-block"
-                                        th:attr="data-product-id=${product.id}" data-toggle="modal"
-                                        data-target="#product-form-modal">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                </button>
-                            </div>
+                        	<div data-placement="top" data-toggle="tooltip" title="Edytuj">
+                        		<button class="btn btn-primary btn-xs button-edit center-block" th:attr="data-product-id=${product.id}" data-toggle="modal" data-target="#product-form-modal">
+                        			<span class="glyphicon glyphicon-pencil"></span>
+                        		</button>
+                        	</div>
                         </td>
                         <td class="align-middle">
-                            <div data-placement="top" data-toggle="tooltip" title="Usuń">
-                                <button class="btn btn-danger btn-xs button-delete center-block"
-                                        th:attr="data-product-id=${product.id}" data-toggle="modal"
-                                        data-target="#confirm-delete-modal">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                </button>
-                            </div>
+                        	<div data-placement="top" data-toggle="tooltip" title="Usuń">
+                        		<button class="btn btn-danger btn-xs button-delete center-block" th:attr="data-product-id=${product.id}" data-toggle="modal" data-target="#confirm-delete-modal">
+                        			<span class="glyphicon glyphicon-trash"></span>
+                        		</button>
+                        	</div>
                         </td>
                     </tr>
                     </tbody>
@@ -101,76 +92,65 @@
         </div>
 
 
-        <div class="modal fade" id="product-form-modal" tabindex="-1" role="dialog" aria-labelledby="edit"
-             aria-hidden="true">
+        <div class="modal fade" id="product-form-modal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form class="form-horizontal" th:action="@{/admin/products}" method="post"
-                          th:object="${productForm}">
+                    <form class="form-horizontal" th:action="@{/admin/products}" method="post" th:object="${productForm}">
                         <fieldset>
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
-                                        class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                                <h4 class="modal-title">Edit Product</h4>
-                            </div>
+		                    <div class="modal-header">
+		                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+		                        <h4 class="modal-title">Edit Product</h4>
+		                    </div>
 
-                            <div class="modal-body">
-                                <div class="form-group" id="id_form_div"
-                                     th:classappend="${#fields.hasErrors('id')}? 'has-error'">
+		                    <div class="modal-body">
+                                <div class="form-group" id="id_form_div" th:classappend="${#fields.hasErrors('id')}? 'has-error'">
                                     <label class="col-sm-3 control-label">ID</label>
                                     <div class="col-sm-9">
-                                        <p id="id_form_static" class="form-control-static" th:text="*{id}">123</p>
-                                        <input id="id_form" type="hidden" th:field="*{id}"/>
-                                    </div>
+                                    	<p id="id_form_static" class="form-control-static" th:text="*{id}">123</p>
+                                    	<input id="id_form" type="hidden" th:field="*{id}"/>
+                                    </div> 
                                     <p th:if="${#fields.hasErrors('id')}" th:errors="*{id}">Name Error</p>
                                 </div>
                                 <div class="form-group" th:classappend="${#fields.hasErrors('name')}? 'has-error'">
                                     <label class="col-sm-3 control-label" for="name_form">Nazwa</label>
                                     <div class="col-sm-9">
-                                        <input id="name_form" class="form-control autofocus" maxlength="80"
-                                               th:field="*{name}"/>
+                                    	<input id="name_form" class="form-control autofocus" maxlength="80" th:field="*{name}"/>
                                     </div>
                                     <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name Error</p>
                                 </div>
                                 <div class="form-group" th:classappend="${#fields.hasErrors('imageUrl')}? 'has-error'">
                                     <label class="col-sm-3 control-label" for="imageUrl_form">URL zdjęcia</label>
                                     <div class="col-sm-9">
-                                        <input id="imageUrl_form" class="form-control" th:field="*{imageUrl}"/>
+                                    	<input id="imageUrl_form" class="form-control" th:field="*{imageUrl}"/>
                                     </div>
                                     <p th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}">Name Error</p>
                                 </div>
-                                <div class="form-group"
-                                     th:classappend="${#fields.hasErrors('description')}? 'has-error'">
+                                <div class="form-group" th:classappend="${#fields.hasErrors('description')}? 'has-error'">
                                     <label class="col-sm-3 control-label" for="description_form">Opis</label>
                                     <div class="col-sm-9">
-                                        <textarea class="form-control" id="description_form" maxlength="80"
-                                                  th:field="*{description}"></textarea>
+                                    	<textarea class="form-control" id="description_form" maxlength="80" th:field="*{description}"></textarea>
                                     </div>
-                                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Name
-                                        Error</p>
+                                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Name Error</p>
                                 </div>
                                 <!--keywords-->
                                 <div class="form-group" th:classappend="${#fields.hasErrors('keywords')}? 'has-error'">
                                     <label class="col-sm-3 control-label" for="keywords_form">Słowa kluczowe</label>
                                     <div class="col-sm-9">
-                                        <input class="form-control keywords" id="keywords_form" type="text"
-                                               name="keywords-holder" placeholder="Dodaj"/>
+                                        <input class="form-control keywords" id="keywords_form" type="text" name="keywords-holder" placeholder="Dodaj" th:field="*{keywordsHolder}"/>
                                     </div>
                                 </div>
                                 <!--keywords-->
-                            </div>
-                            <div class="modal-footer ">
-                                <button type="submit" class="btn btn-primary btn-lg btn-block button-submit">Zapisz
-                                </button>
-                            </div>
-                        </fieldset>
-                    </form>
+		                    </div>
+		                    <div class="modal-footer ">
+		                        <button type="submit" class="btn btn-primary btn-lg btn-block button-submit">Zapisz</button>
+		                    </div>
+	                    </fieldset>
+                  	</form>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="edit"
-             aria-hidden="true">
+        <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -179,16 +159,15 @@
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger">
-                            <span class="glyphicon glyphicon-warning-sign"></span> Czy na pewno chcesz usunąć produkt
-                            &quot;<span class="name-placeholder"></span>&quot;?
+                        	<span class="glyphicon glyphicon-warning-sign"></span> Czy na pewno chcesz usunąć produkt &quot;<span class="name-placeholder"></span>&quot;?
                         </div>
                     </div>
                     <div class="modal-footer ">
                         <button type="button" class="btn btn-success button-delete">
-                            <span class="glyphicon glyphicon-ok-sign"></span> Tak
+                        	<span class="glyphicon glyphicon-ok-sign"></span> Tak
                         </button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">
-                            <span class="glyphicon glyphicon-remove"></span> Nie
+                        	<span class="glyphicon glyphicon-remove"></span> Nie
                         </button>
                     </div>
                 </div>

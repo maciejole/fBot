@@ -18,23 +18,18 @@ package pl.hycom.pip.messanger.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import pl.hycom.pip.messanger.model.Keyword;
-import pl.hycom.pip.messanger.model.Product;
+import pl.hycom.pip.messanger.controller.model.ProductDTO;
 import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.ProductService;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -48,35 +43,32 @@ public class ProductController {
 
     @GetMapping("/admin/products")
     public String showProducts(Model model) {
-        prepareModel(model, new Product());
+        prepareModel(model, new ProductDTO());
         return PRODUCTS_VIEW;
     }
 
     @PostMapping("/admin/products")
-    public String addOrUpdateProduct(@Valid Product product, BindingResult bindingResult, Model model, HttpServletRequest request) {
-
+    public String addOrUpdateProduct(@Valid ProductDTO product, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             prepareModel(model, product);
+            model.addAttribute("errors", bindingResult.getFieldErrors());
             log.info("Validation product error !!!");
-
             return PRODUCTS_VIEW;
         }
-
-        productService.addOrUpdateProduct(product, StringUtils.split(request.getParameter("keywords-holder"), ','));
-
+        productService.addOrUpdateProduct(product);
         return "redirect:/admin/products";
     }
-
+    @ResponseBody
     @DeleteMapping("/admin/products/{productId}/delete")
-    public @ResponseBody void deleteProduct(@PathVariable("productId") final Integer id) {
+    public void deleteProduct(@PathVariable("productId") final Integer id) {
         productService.deleteProduct(id);
-        log.info("Product[" + id + "] deleted !!!");
+        log.info("ProductDTO[" + id + "] deleted !!!");
     }
 
     @ResponseBody
     @GetMapping("/admin/product/keyword/suggestions")
     public List<String> getKeywordsSuggestions(@RequestParam("searchTerm") String searchTerm) {
-        return keywordService.findKeywordsBySearchTerm(searchTerm).stream().map(Keyword::getWord).collect(Collectors.toList());
+        return keywordService.findKeywordsBySearchTerm(searchTerm);
     }
 
     @ResponseBody
@@ -84,11 +76,11 @@ public class ProductController {
     public List<String> getProductKeywords(@PathVariable("productId") final Integer id) {
         log.info("Searching for product's [" + id + "] keywords");
 
-        return productService.findProductById(id).getKeywords().stream().map(Keyword::getWord).collect(Collectors.toList());
+        return productService.findProductKeywords(id);
     }
 
-    private void prepareModel(Model model, Product product) {
-        List<Product> allProducts = productService.findAllProducts();
+    private void prepareModel(Model model, ProductDTO product) {
+        List<ProductDTO> allProducts = productService.findAllProducts();
         model.addAttribute("products", allProducts);
         model.addAttribute("productForm", product);
     }

@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import pl.hycom.pip.messanger.model.Greeting;
+import pl.hycom.pip.messanger.controller.model.Greeting;
 import pl.hycom.pip.messanger.service.GreetingService;
 
 /**
@@ -111,5 +111,18 @@ public class GreetingServiceTest {
 
         Assertions.assertThat(valid).isFalse();
     }
+
+//    @Test
+//    public void removeDefaultLocale() throws Exception {
+//        Greeting greeting = new Greeting();
+//        greeting.setLocale("default");
+//        GreetingService gs  = new GreetingService();
+//
+//        gs.removeGreeting(greeting.getLocale(), {
+//        });
+//        Assertions.assertThat(greeting.getLocale().isEmpty()==true);
+//
+//
+//    }
 
 }

@@ -11,20 +11,22 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import pl.hycom.pip.messanger.MessengerRecommendationsApplication;
-import pl.hycom.pip.messanger.model.Product;
 import pl.hycom.pip.messanger.repository.ProductRepository;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
 import pl.hycom.pip.messanger.service.ProductService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -38,7 +40,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 @Log4j2
 public class ProductControllerTest {
-
 
     private MockMvc mockMvc;
 
@@ -57,14 +58,16 @@ public class ProductControllerTest {
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Product product1;
-        Product product2;
 
+        Product product2;
+        Product product1;
         product1 = new Product();
         product1.setName("name1");
         product1.setDescription("desc1");
         product1.setImageUrl("url1");
-
+        Keyword keyword = new Keyword();
+        keyword.setWord("testKeyword");
+        product1.addKeyword(keyword);
         product2 = new Product();
         product2.setName("name2");
         product2.setDescription("desc2");
@@ -127,24 +130,23 @@ public class ProductControllerTest {
 
     @Test
     public void addOrUpdateTest() throws Exception {
+        final MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+        params.put("id", Collections.singletonList("0"));
+        params.put("name", Collections.singletonList("test product"));
+        params.put("name", Collections.singletonList("test product"));
+        params.put("description", Collections.singletonList("test product desc"));
+        params.put("imageUrl", Collections.singletonList("http://localhost/test.image.jpg"));
+        params.put("keywords.id", Collections.singletonList("1"));
+        params.put("keywords.word", Collections.singletonList("testKeyword"));
 
-        mockMvc.perform(post("/admin/products"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("products"));
+        mockMvc.perform(post("/admin/products").params(params))
+               .andExpect(status().isFound())
+               .andExpect(view().name("redirect:/admin/products"));
     }
 
     @After
     public void cleanAll() {
         productService.deleteAllProducts();
     }
-
-
-
-
-
-
-
-
-
 
 }

@@ -21,3 +21,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  mail:
+      host: smtp.gmail.com
+      port: 587
+      username: messenger.recommendations2017@gmail.com
+      password: Admin_2017
+      properties.mail.smtp:
+            auth: true
+            starttls.enable: true
+            starttls.required: true

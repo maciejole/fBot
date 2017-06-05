@@ -23,11 +23,47 @@ jQuery(function ($) {
     $(".message-item").on('blur', function () {
         lastSelected = $(this);
     })
+
+    $("#confirm-delete-modal").on('shown.bs.modal', function (event) {
+
+        var greetingLocale = $(event.relatedTarget).data('greeting-locale');
+        $(this).find('.button-delete').data("greeting-locale", greetingLocale)
+    });
+
+    $("#confirm-delete-modal").find('.button-delete').on("click", function (e) {
+        removeGreeting($(e.currentTarget).data("greeting-locale"))
+
+    })
 });
 
 function addText(el, text) {
     lastSelected.focus().val(lastSelected.val() + text);
     return false;
 }
+
+
+function removeGreeting(locale) {
+    var token = $("input[name='_csrf']").val();
+    var header = "X-CSRF-TOKEN";
+    $(document).ajaxSend(function (e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
+    $.ajax({
+        url: '/admin/deleteGreeting/' + locale,
+        type: 'DELETE',
+        data: {CSRFToken: token, CSRF: header},
+        success: function (xhr, status, error) {
+            window.location = "/admin/greetings?success=true"
+        },
+        error: function (xhr, status, error) {
+            window.location = "/admin/greetings?success=false"
+        }
+    });
+}
+
+
+
+
+
 
 

@@ -29,8 +29,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import pl.hycom.pip.messanger.handler.processor.LoadBestMatchingProductsProcessor;
-import pl.hycom.pip.messanger.model.Keyword;
-import pl.hycom.pip.messanger.model.Product;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
 import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.ProductService;
 

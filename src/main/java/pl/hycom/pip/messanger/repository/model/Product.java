@@ -14,20 +14,31 @@
  *   limitations under the License.
  */
 
-package pl.hycom.pip.messanger.model;
+package pl.hycom.pip.messanger.repository.model;
 
-import lombok.Data;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Data
 @Entity
 @Table(name = "PRODUCTS")
+@NoArgsConstructor
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 9211285852881742074L;
@@ -63,4 +74,5 @@ public class Product implements Serializable {
     public boolean addKeyword(Keyword keyword) {
         return keywords.add(keyword);
     }
+
 }

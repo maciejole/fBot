@@ -13,18 +13,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DirectFieldBindingResult;
-import org.springframework.web.context.WebApplicationContext;
-import pl.hycom.pip.messanger.model.GreetingListWrapper;
+import pl.hycom.pip.messanger.controller.model.GreetingListWrapper;
 import pl.hycom.pip.messanger.service.GreetingService;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -63,14 +61,14 @@ public class GreetingControllerTest {
         assertThat(resultView).isEqualTo(GreetingController.VIEW_GREETINGS);
         final Map<String, Object> map = model.asMap();
         //greet should be:
-        final pl.hycom.pip.messanger.model.Greeting resultGreet = (pl.hycom.pip.messanger.model.Greeting) map.get("greeting");
+        final pl.hycom.pip.messanger.controller.model.Greeting resultGreet = (pl.hycom.pip.messanger.controller.model.Greeting) map.get("greeting");
         assertThat(resultGreet.getText()).isEqualTo(null);
         assertThat(resultGreet.getLocale()).isEqualTo("");
         //greetingWrapper should be:
         final GreetingListWrapper wrapper = (GreetingListWrapper) map.get("greetingListWrapper");
         assertThat(wrapper.getGreetings().size()).isEqualTo(2);
-        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.model.Greeting(greeting));
-        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.model.Greeting(new Greeting("")));
+        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.controller.model.Greeting(greeting));
+        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.controller.model.Greeting(new Greeting("")));
         //locale list should be:
         final Map<String, String> availableLocale = (Map<String, String>) map.get("availableLocale");
         assertThat(availableLocale.isEmpty()).isTrue();
@@ -82,10 +80,10 @@ public class GreetingControllerTest {
         when(profileClient.getWelcomeMessage()).thenReturn(resp);
 
         final GreetingListWrapper wrapper = new GreetingListWrapper(Collections.singletonList(greeting));
-        String viewResult = controller.addGreetings(wrapper, null,null);
+        String viewResult = controller.addGreetings(wrapper);
         assertThat(viewResult).isEqualTo(GreetingController.REDIRECT_ADMIN_GREETINGS);
         assertThat(wrapper.getGreetings().size()).isEqualTo(1);
-        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.model.Greeting(greeting));
+        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.controller.model.Greeting(greeting));
     }
 
     @Test
@@ -95,7 +93,7 @@ public class GreetingControllerTest {
         when(greetingService.isValidLocale("pl_PL")).thenReturn(true);
 
         Greeting testGreet = new Greeting("test", "pl_PL");
-        pl.hycom.pip.messanger.model.Greeting greet = new pl.hycom.pip.messanger.model.Greeting(testGreet);
+        pl.hycom.pip.messanger.controller.model.Greeting greet = new pl.hycom.pip.messanger.controller.model.Greeting(testGreet);
         BindingResult bindingResult = new DirectFieldBindingResult(greet, "adddedGreeting");
 
         String ViewResult = controller.addGreeting(greet, bindingResult, model);
@@ -109,13 +107,13 @@ public class GreetingControllerTest {
         when(greetingService.isValidLocale("pl_PL")).thenReturn(false);
 
         Greeting testGreet = new Greeting("test", "pl_PL");
-        pl.hycom.pip.messanger.model.Greeting greet = new pl.hycom.pip.messanger.model.Greeting(testGreet);
+        pl.hycom.pip.messanger.controller.model.Greeting greet = new pl.hycom.pip.messanger.controller.model.Greeting(testGreet);
         BindingResult bindingResult = new DirectFieldBindingResult(greet, "adddedGreeting");
 
         String ViewResult = controller.addGreeting(greet, bindingResult, model);
         final Map<String, Object> map = model.asMap();
         assertThat(ViewResult).isEqualTo("greetings");
-        final pl.hycom.pip.messanger.model.Greeting resultGreet = (pl.hycom.pip.messanger.model.Greeting) map.get("greeting");
+        final pl.hycom.pip.messanger.controller.model.Greeting resultGreet = (pl.hycom.pip.messanger.controller.model.Greeting) map.get("greeting");
         assertThat(resultGreet.getText()).isEqualTo("test");
         assertThat(resultGreet.getLocale()).isEqualTo("pl_PL");
     }

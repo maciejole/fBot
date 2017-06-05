@@ -14,26 +14,37 @@
  *   limitations under the License.
  */
 
-package pl.hycom.pip.messanger.model;
+package pl.hycom.pip.messanger.repository.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
- * Created by rafal on 13.03.2017.
+ * Created by patry on 18/03/2017.
  */
+
 @Data
+@Entity
+@Table(name = "KEYWORDS")
 @NoArgsConstructor
-public class Greeting {
+public class Keyword implements Serializable {
 
-    @Size(min = 2, max = 160, message = "{greeting.text.size}")
-    private String text;
-    private String locale = "";
+    private static final long serialVersionUID = -8450849049742048985L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    @NotNull
+    @Column(unique = true)
+    private String word;
 
-    public Greeting(com.github.messenger4j.profile.Greeting profileGreeting) {
-        setText(profileGreeting.getText());
-        setLocale(profileGreeting.getLocale());
+    public Keyword(String word) {
+        super();
+        this.word = word;
     }
+
 }

@@ -29,8 +29,6 @@ import pl.hycom.pip.messanger.service.ProductService;
 @Log4j2
 public class LoadRandomProductsProcessor implements PipelineProcessor {
 
-    public static final String PRODUCTS = "products";
-
     @Autowired
     private ProductService productService;
 

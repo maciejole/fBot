@@ -13,7 +13,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import pl.hycom.pip.messanger.MessengerRecommendationsApplication;
-import pl.hycom.pip.messanger.model.Keyword;
+import pl.hycom.pip.messanger.controller.model.KeywordDTO;
+import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.service.KeywordService;
 
 import java.util.ArrayList;
@@ -108,16 +109,16 @@ public class KeywordControllerTest {
 
     @Test
     public void deleteById() throws Exception {
-
         int id = list.get(2);
         mockMvc.perform(delete("/admin/keywords/" + id + "/delete"))
-                .andExpect(status().isOk());
+               .andExpect(status().isFound())
+               .andExpect(view().name("redirect:/admin/keywords"));
     }
 
     @Test
     public void addOrUpdateTest() throws Exception {
-
-        mockMvc.perform(post("/admin/keywords"))
+        //Given:
+        mockMvc.perform(post("/admin/keywords").param("word", "test1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("keywords"));
     }

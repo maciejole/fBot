@@ -23,7 +23,6 @@ import com.github.messenger4j.user.UserProfileClient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.hycom.pip.messanger.handler.PipelineMessageHandler;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
@@ -34,8 +33,8 @@ public class UserProfileProcessor implements PipelineProcessor {
 
     public static final String LOCALE = "user.locale";
     public static final String GENDER = "user.gender";
-    public static final String FIRST_NAME = "user.firstname";
-    public static final String LAST_NAME = "user.lastname";
+    public static final String FIRST_NAME = "user.firstName";
+    public static final String LAST_NAME = "user.lastName";
 
     @Autowired
     private UserProfileClient userProfileClient;
@@ -46,7 +45,7 @@ public class UserProfileProcessor implements PipelineProcessor {
         log.info("Started process of UserProfileProcessor");
 
         try {
-            UserProfile userProfile = userProfileClient.queryUserProfile(ctx.get(PipelineMessageHandler.SENDER_ID, String.class));
+            UserProfile userProfile = userProfileClient.queryUserProfile(ctx.get(SENDER_ID, String.class));
 
             ctx.put(LOCALE, userProfile.getLocale());
             ctx.put(GENDER, userProfile.getGender());

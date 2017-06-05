@@ -20,6 +20,12 @@ import lombok.NonNull;
 
 public interface PipelineProcessor {
 
-    int runProcess(@NonNull PipelineContext ctx) throws PipelineException;
+    String SENDER_ID = "senderId";
+    String MESSAGE = "message";
+    String PRODUCTS = "products";
+    String KEYWORDS = "keywords";
+    String KEYWORDS_FOUND = "keywordsFound";
+    String KEYWORD_TO_BE_ASKED = "keywordToBeAsked";
 
+    int runProcess(@NonNull PipelineContext ctx) throws PipelineException;
 }

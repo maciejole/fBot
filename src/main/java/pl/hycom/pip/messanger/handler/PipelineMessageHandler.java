@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineManager;
+import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 
 import javax.inject.Inject;
 import java.util.HashMap;
@@ -31,8 +32,6 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class PipelineMessageHandler implements TextMessageEventHandler {
 
-    public static final String SENDER_ID = "senderId";
-    public static final String MESSAGE = "message";
     private static final String PIPELINECHAIN_NAME = "processMessage";
     private final PipelineManager pipelineManager;
 
@@ -41,8 +40,8 @@ public class PipelineMessageHandler implements TextMessageEventHandler {
 
         Map<String, Object> params = new HashMap<>();
 
-        params.put(SENDER_ID, msg.getSender().getId());
-        params.put(MESSAGE, msg.getText());
+        params.put(PipelineProcessor.SENDER_ID, msg.getSender().getId());
+        params.put(PipelineProcessor.MESSAGE, msg.getText());
 
         try {
             pipelineManager.runProcess(PIPELINECHAIN_NAME, params);

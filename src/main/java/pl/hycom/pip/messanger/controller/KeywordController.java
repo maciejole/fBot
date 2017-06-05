@@ -25,8 +25,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.*;
-import pl.hycom.pip.messanger.model.Keyword;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import pl.hycom.pip.messanger.controller.model.KeywordDTO;
+import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.ProductService;
 
@@ -50,12 +54,12 @@ public class KeywordController {
 
     @GetMapping("/admin/keywords")
     public String showKeywords(Model model) {
-        prepareModel(model, new Keyword());
+        prepareModel(model, new KeywordDTO());
         return KEYWORDS_VIEW;
     }
 
     @PostMapping("/admin/keywords")
-    public String addOrUpdateKeyword(@Valid Keyword keyword, BindingResult bindingResult, Model model) {
+    public String addOrUpdateKeyword(@Valid KeywordDTO keyword, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
             prepareModel(model, keyword);
@@ -65,7 +69,7 @@ public class KeywordController {
             return KEYWORDS_VIEW;
         }
 
-        if (keywordService.findKeywordByWord(keyword.getWord()) != null) {
+        if (keywordService.isAnyKeywordWithWord(keyword.getWord())) {
             prepareModel(model, keyword);
             model.addAttribute("error", new ObjectError("keywordExists", "Słowo kluczowe już istnieje."));
 
@@ -78,24 +82,25 @@ public class KeywordController {
     }
 
     @DeleteMapping("/admin/keywords/{keywordId}/delete")
-    public ResponseEntity<Void> deleteKeyword(@PathVariable("keywordId") final Integer id, Model model) {
+    public String deleteKeyword(@PathVariable("keywordId") final Integer id, Model model) {
 
-        Keyword deletedKeyword = keywordService.findKeywordById(id);
-        if (deletedKeyword == null) {
-            log.info("keyword have already been deleted");
-        } else if (productService.findAllProductsContainingAtLeastOneKeyword(Collections.singletonList(deletedKeyword)).isEmpty()) {
+        KeywordDTO keywordToDelete = keywordService.findKeywordById(id);
+        if (!productService.isAnyProductContainingAtLeastOneKeyword(Arrays.asList(keywordToDelete))) {
             keywordService.deleteKeyword(id);
-            log.info("Keyword[" + id + "] deleted !!!");
+            log.info("KeywordDTO[" + id + "] deleted !!!");
         } else {
-            log.info("cannot delete keyword = " + deletedKeyword);
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+            prepareModel(model, new KeywordDTO());
+            ObjectError error = new ObjectError("keywordInUsage", "Słowo kluczowe jest przypisane do produktu.");
+            model.addAttribute("error", error);
+            log.info("cannot delete keyword = " + keywordToDelete);
+            return KEYWORDS_VIEW;
         }
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return "redirect:/admin/keywords";
     }
 
-    private void prepareModel(Model model, Keyword keyword) {
-        List<Keyword> allKeywords = keywordService.findAllKeywords();
+    private void prepareModel(Model model, KeywordDTO keyword) {
+        List<KeywordDTO> allKeywords = keywordService.findAllKeywords();
         model.addAttribute("keywords", allKeywords);
         model.addAttribute("keywordForm", keyword);
     }

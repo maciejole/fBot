@@ -28,11 +28,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import pl.hycom.pip.messanger.model.Greeting;
-import pl.hycom.pip.messanger.model.GreetingListWrapper;
+import pl.hycom.pip.messanger.controller.model.Greeting;
+import pl.hycom.pip.messanger.controller.model.GreetingListWrapper;
 import pl.hycom.pip.messanger.service.GreetingService;
 
 import javax.validation.Valid;
@@ -63,55 +64,44 @@ public class GreetingController {
     @Autowired
     private MessageSource bundleMessageSource;
 
-    @GetMapping(ADMIN_GREETINGS)
-    public String getGreetings(Model model) {
-        prepareModel(model);
-        return VIEW_GREETINGS;
-    }
 
-    @PostMapping(ADMIN_GREETINGS)
-    public String addGreetings(@Valid GreetingListWrapper greetingListWrapper, BindingResult bindingResult, Model model) {
-        try {
-            profileClient.setupWelcomeMessages(greetingListWrapper.extractGreetings());
-            log.info("Greeting text correctly updated");
-        } catch (MessengerApiException | MessengerIOException e) {
-            log.error("Error during changing greeting message", e);
-        }
+    @PostMapping("/admin/greetings")
+    public String addGreetings(@Valid GreetingListWrapper greetingListWrapper) {
+        greetingService.addGreetings(greetingListWrapper);
         return REDIRECT_ADMIN_GREETINGS;
     }
 
     @PostMapping("/admin/greeting")
     public String addGreeting(@Valid Greeting greeting, BindingResult bindingResult, Model model) {
+        boolean isAdditionSuccessfull = true;
+
+        if (!greetingService.isValidLocale(greeting.getLocale())) {
+            log.error("Not supported locale[" + greeting.getLocale() + "]");
+            addError(bindingResult, "greeting.locale.empty");
+        }
+
+        if (bindingResult.hasErrors()) {
+            prepareModel(model, greeting);
+            log.error("Greeting validation errors: " + bindingResult.getAllErrors());
+            return VIEW_GREETINGS;
+
+        }
         try {
-            if (!greetingService.isValidLocale(greeting.getLocale())) {
-                log.error("Not supported locale[" + greeting.getLocale() + "]");
-                addError(bindingResult, "greeting.locale.empty");
-            }
-
-            if (bindingResult.hasErrors()) {
-                prepareModel(model, greeting);
-                log.error("Greeting validation errors: " + bindingResult.getAllErrors());
-                return VIEW_GREETINGS;
-            }
-
-            List<com.github.messenger4j.profile.Greeting> greetings = getGreetingsWithDefaultLocale();
-            com.github.messenger4j.profile.Greeting profileGreeting = new com.github.messenger4j.profile.Greeting(greeting.getText(), greeting.getLocale());
-            greetings.add(profileGreeting);
-            profileClient.setupWelcomeMessages(greetings);
-            log.info("Greeting text correctly updated");
+            greetingService.addGreeting(greeting);
+            return "redirect:" + ADMIN_GREETINGS + "?success=" + isAdditionSuccessfull;
         } catch (MessengerApiException | MessengerIOException e) {
+            isAdditionSuccessfull = false;
             log.error("Error during changing greeting message", e);
             addError(bindingResult, "unexpectedError");
             prepareModel(model, greeting);
             model.addAttribute("errors", bindingResult.getFieldErrors());
-            return VIEW_GREETINGS;
+            return "redirect:" + ADMIN_GREETINGS + "?success=" + isAdditionSuccessfull;
         }
 
-        return REDIRECT_ADMIN_GREETINGS;
     }
 
-    // Jest get, bo nie wiedziałem jak odwołać sie do posta/deleta z linka z front-endu
-    @GetMapping("/admin/deleteGreeting/{locale}")
+
+    @DeleteMapping("/admin/deleteGreeting/{locale}")
     public String removeGreeting(@PathVariable String locale, Model model) {
         if (StringUtils.equals(locale, DEFAULT_LOCALE)) {
             prepareModel(model);
@@ -120,15 +110,35 @@ public class GreetingController {
             return VIEW_GREETINGS;
         }
         try {
-            List<com.github.messenger4j.profile.Greeting> greetings = getGreetingsWithDefaultLocale();
-            greetings.removeIf(g -> StringUtils.equals(g.getLocale(), locale));
-            profileClient.removeWelcomeMessage();
-            profileClient.setupWelcomeMessages(greetings);
+            greetingService.removeGreeting(locale);
             log.info("Deleting greeting succeeded");
         } catch (MessengerApiException | MessengerIOException e) {
             log.info("Deleting greeting failed", e);
         }
-        return REDIRECT_ADMIN_GREETINGS;
+
+        return VIEW_GREETINGS;
+    }
+
+
+    private void addError(BindingResult bindingResult, String messageCode, Object... args) {
+        addError(bindingResult, "all", messageCode, args);
+    }
+
+
+    private String getMessage(String messageCode, Object... args) {
+        return bundleMessageSource.getMessage(messageCode, args, "Unsupported operation", LocaleContextHolder.getLocale());
+    }
+
+
+    public void prepareModel(Model model) {
+        prepareModel(model, new Greeting());
+    }
+
+    private void prepareModel(Model model, Greeting greeting) {
+        List<com.github.messenger4j.profile.Greeting> greetings = greetingService.getGreetingsWithDefaultLocale();
+        greetingService.sortByLocale(greetings);
+        GreetingListWrapper greetingListWrapper = new GreetingListWrapper(greetings);
+        prepareModel(model, greeting, greetingListWrapper, greetings);
     }
 
     private void prepareModel(Model model, Greeting greeting, GreetingListWrapper greetingListWrapper, List<com.github.messenger4j.profile.Greeting> greetings) {
@@ -137,28 +147,18 @@ public class GreetingController {
         model.addAttribute("greeting", greeting);
     }
 
-    private void prepareModel(Model model) {
-        prepareModel(model, new Greeting());
+    @GetMapping("/admin/greetings")
+    public String getGreetings(Model model) {
+        prepareModel(model);
+        return VIEW_GREETINGS;
     }
 
-    private void prepareModel(Model model, Greeting greeting) {
-        List<com.github.messenger4j.profile.Greeting> greetings = getGreetingsWithDefaultLocale();
-        sortByLocale(greetings);
-        GreetingListWrapper greetingListWrapper = new GreetingListWrapper(greetings);
-        prepareModel(model, greeting, greetingListWrapper, greetings);
-    }
 
-    private String getMessage(String messageCode, Object... args) {
-        return bundleMessageSource.getMessage(messageCode, args, "Unsupported operation", LocaleContextHolder.getLocale());
-    }
 
     private void addError(BindingResult bindingResult, String objectName, String messageCode, Object... args) {
         bindingResult.addError(new ObjectError(objectName, getMessage(messageCode, args)));
     }
 
-    private void addError(BindingResult bindingResult, String messageCode, Object... args) {
-        addError(bindingResult, "all", messageCode, args);
-    }
 
     private List<com.github.messenger4j.profile.Greeting> getGreetingsWithDefaultLocale() {
         List<com.github.messenger4j.profile.Greeting> greetings = getGreetings();

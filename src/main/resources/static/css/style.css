@@ -230,3 +230,39 @@ tt-highlight {
     margin: 0.1em;
     display: inline-block;
 }
+
+.account-panel {
+    width: 800px;
+    height: 310px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+#image-container {
+    width: 40%;
+    float: left;
+}
+
+#inputs-container {
+    width: 60%;
+    float: left;
+}
+
+#profile-image {
+    width: 250px;
+    height: 300px;
+    display: block;
+    margin: auto;
+}
+
+.buttons-account {
+    margin-left: auto;
+    margin-right: auto;
+    width: 735px;
+    padding-right: 90px;
+}
+
+#button-save {
+    display: none;
+}
