@@ -2,6 +2,9 @@ messenger:
   pageAccessToken: ${MESSENGER_PAGE_ACCESS_TOKEN}
   appSecret: ${MESSENGER_APP_SECRET}
   verifyToken: ${MESSENGER_VERIFY_TOKEN}
+  host: mr-master.herokuapp.com
+  port: 80
+  protocol : http
   recommendation:
     products-amount: 3
   pipeline:

@@ -25,30 +25,30 @@
 	<div layout:fragment="content">
         <!--<p th:if="${error}" class="error">Wrong user or password</p>-->
         <div th:if="${sendOrNotSend} != null" class="alert alert-info">
-            If user exists, email was sent.
+            <p th:text="${#messages.msg('sendOrNotSend')}"></p>
         </div>
         <div th:if="${passwordChangedOrNotChanged} != null" class="alert alert-info">
-            If user exists, password was changed.
+            <p th:text="${#messages.msg('passwordChangedOrNotChanged')}"></p>
         </div>
 		<div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Please Sign In</h3>
+                        <h3 class="panel-title">Zaloguj się!</h3>
                     </div>
                     <div class="panel-body">
                         <form role="form" th:action="@{/login}" method="post">
                             <fieldset>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Username" name="username" type="text" autofocus=""/>
+                                    <input class="form-control" placeholder="Email" name="username" type="text" autofocus=""/>
                                 </div>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Password" name="password" type="password" value=""/>
+                                    <input class="form-control" placeholder="Hasło" name="password" type="password" value=""/>
                                 </div>
                                 <div class="alert alert-danger fade in error" th:if="${error}">
-                                    <span>Wrong user or password</span>
+                                    <span>Niepoprawny email lub hasło</span>
                                 </div>
-                                <button type="submit" class="btn btn-lg btn-success btn-block">Login</button>
+                                <button type="submit" class="btn btn-lg btn-success btn-block">Zaloguj</button>
                             </fieldset>
                         </form>
                     </div>
@@ -57,7 +57,7 @@
         </div>
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
-                <a th:href="@{/user/password/change}">I forgot password</a>
+                <a th:href="@{/account/password/change}">Zapomniałeś hasła?</a>
             </div>
         </div>
 	</div>

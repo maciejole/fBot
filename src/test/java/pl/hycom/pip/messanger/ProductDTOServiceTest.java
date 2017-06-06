@@ -52,7 +52,7 @@ public class ProductDTOServiceTest {
     @Autowired
     private MapperFacade orikaMapper;
 
-    @Value("${messenger.recommendation.products-amount}")
+    @Value("${messenger.recommendation.products-amount:3}")
     Integer expectedNumberOfProducts;
     @Autowired
     private ProductService productService;

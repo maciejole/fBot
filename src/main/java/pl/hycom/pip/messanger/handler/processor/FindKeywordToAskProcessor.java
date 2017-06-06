@@ -16,7 +16,9 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
+import javax.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
@@ -25,7 +27,9 @@ import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.repository.model.Product;
 
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,7 +38,10 @@ import java.util.stream.Collectors;
  */
 @Component
 @Log4j2
-public class ExtraKeywordProcessor implements PipelineProcessor {
+public class FindKeywordToAskProcessor implements PipelineProcessor {
+
+    public static final int SEND_KEYWORD_QUESTION = 1;
+    public static final int SEND_PRODUCTS_MESSAGE = 2;
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
@@ -42,27 +49,45 @@ public class ExtraKeywordProcessor implements PipelineProcessor {
 
         @SuppressWarnings("unchecked")
         List<Product> products = ctx.get(PRODUCTS, List.class);
+        @SuppressWarnings("unchecked")
+        List<Keyword> keywords = ctx.get(KEYWORDS, List.class);
 
-        Keyword keywordToBeAsked = findKeyKeyword(products);
-        ctx.put(KEYWORD_TO_BE_ASKED, keywordToBeAsked);
-        log.info("Added keywordToBeAsked: " + keywordToBeAsked.getWord());
-        return 1;
+        Keyword keywordToBeAsked = findKeywordToAsk(products, keywords);
+        if (keywordToBeAsked != null) {
+            ctx.put(KEYWORD_TO_BE_ASKED, keywordToBeAsked);
+            log.info("Added keywordToBeAsked: " + keywordToBeAsked.getWord());
+            return SEND_KEYWORD_QUESTION;
+        } else {
+            log.info("No keyword to be asked could be found");
+            return SEND_PRODUCTS_MESSAGE;
+        }
     }
 
-    Keyword findKeyKeyword(List<Product> products) {
-        int desiredCount = products == null ? 0 : products.size() / 2;
-        Map.Entry<Keyword, Long> keywordCountEntry = Optional.ofNullable(products).orElse(Collections.emptyList()).parallelStream()
+    /**
+     * @param products
+     * @param wantedKeywords Keywordy, które zostały wyciągnięte z zapytań
+     * @return null if no keyword found
+     */
+    @Nullable
+    Keyword findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) {
+        if (CollectionUtils.isEmpty(products)) {
+            throw new InvalidParameterException("Products cannot be null or empty");
+        }
+
+        int desiredCount = products.size() / 2;
+        Map.Entry<Keyword, Long> keywordCountEntry = products.parallelStream()
                 .flatMap(product -> product.getKeywords().stream())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
+                .filter(keywordLongEntry -> !wantedKeywords.contains(keywordLongEntry.getKey()))
                 .map(keywordLongEntry -> {
                     keywordLongEntry.setValue(Math.abs(keywordLongEntry.getValue() - desiredCount));
                     return keywordLongEntry;
                 })
                 .sorted(Comparator.comparingLong(Map.Entry::getValue))
-                .findFirst().orElseThrow(() -> new InvalidParameterException("Prodcuts cannot be null or empty"));
+                .findFirst().orElse(null);
 
-        return keywordCountEntry.getKey();
+        return keywordCountEntry == null ? null : keywordCountEntry.getKey();
     }
 
 }

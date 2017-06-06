@@ -61,7 +61,6 @@ public class MessengerWebhook {
             @RequestBody final String payload,
             @RequestHeader(value = "X-Hub-Signature") String signature) {
 
-        log.info("Received message - starting prepare answer");
 
         try {
             receiveClient.processCallbackPayload(payload, signature);

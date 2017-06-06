@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.hycom.pip.messanger.handler.PipelineMessageHandler;
+import pl.hycom.pip.messanger.handler.PipelineQuickReplyHandler;
 import pl.hycom.pip.messanger.pipeline.PipelineManager;
 
 /**
@@ -58,9 +59,15 @@ public class MessengerConfiguration {
     }
 
     @Bean
+    public PipelineQuickReplyHandler pipelineQuickReplyHandler() {
+        return new PipelineQuickReplyHandler(pipelineManager());
+    }
+
+    @Bean
     public MessengerReceiveClient receiveClient() {
         return MessengerPlatformWrapper.newReceiveClientBuilder(appSecret, verifyToken)
                 .onTextMessageEvent(pipelineMessageHandler())
+                .onQuickReplyMessageEvent(pipelineQuickReplyHandler())
                 .build();
     }
 

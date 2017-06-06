@@ -21,8 +21,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import pl.hycom.pip.messanger.repository.model.Keyword;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by szale_000 on 2017-04-06.
@@ -120,6 +124,18 @@ public class ExtractKeywordsFromMessageProcessorTest {
         Set<String> processKeywords = sut.extractKeywords(message);
         // then
         Assertions.assertThat(processKeywords).isEmpty();
+    }
+
+    @Test
+    public void testArray() {
+        // given
+        List<Keyword> arrayList = Arrays.asList(new Keyword("test1"), new Keyword("test2"), new Keyword("test3"));
+        String message = arrayList.stream().map(Keyword::getWord).collect(Collectors.toList()).toString();
+        // when
+        Set<String> processKeywords = sut.extractKeywords(message);
+        //then
+        Assertions.assertThat(processKeywords).hasSize(3)
+                .containsExactlyInAnyOrder("test1", "test2", "test3");
     }
 
 }

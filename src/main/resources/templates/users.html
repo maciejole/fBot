@@ -40,12 +40,12 @@
 
     <div class="alert alert-success fade in" th:if="${(param.success != null) and (param.success[0] == 'true') }">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <span>Udało się usunąć słowo kluczowe</span>
+        <span>Udało się usunąć użytkownika</span>
     </div>
 
     <div class="alert alert-danger fade in" th:if="${(param.success != null) and (param.success[0] == 'false') }">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <span>Nie udało się usunąć słowa kluczowego</span>
+        <span>Nie udało się usunąć użytkownika</span>
     </div>
 
     <div class="row">
@@ -116,7 +116,7 @@
                                     <label class="col-sm-3 control-label" for="email_form">Email</label>
                                     <div class="col-sm-9">
                                         <input id="email_form" class="form-control autofocus" maxlength="40"
-                                               th:field="*{email}"/>
+                                               th:field="*{email}" placeholder="email@example.com"/>
                                     </div>
                                     <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p>
                                 </div>
@@ -141,23 +141,22 @@
                                         Error</p>
                                 </div>
                                 <div class="form-group"
-                                     th:classappend="${#fields.hasErrors('phoneNumber')}? 'has-error'">
+                                     >
                                     <label class="col-sm-3 control-label" for="phoneNumber_form">Numer telefonu</label>
                                     <div class="col-sm-9">
                                         <input class="form-control" id="phoneNumber_form"
-                                               th:field="*{phoneNumber}"/>
+                                               th:field="*{phoneNumber}" placeholder="+48777888999"/>
                                     </div>
                                     <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Phone
                                         number
                                         Error</p>
                                 </div>
-                                <div class="form-group"
-                                     th:classappend="${#fields.hasErrors('phoneNumber')}? 'has-error'">
+                                <div class="form-group">
                                     <label class="col-sm-3 control-label" for="roles_form">Role</label>
                                     <div class="col-sm-9">
                                         <ul>
                                             <li th:each="role : ${authorities}">
-                                                <input type="checkbox" th:field="*{roles}" th:value="${role}" id="roles_form" />
+                                                <input type="checkbox" name="role" th:field="*{roles}" th:value="${role.id}" id="roles_form"/>
                                                 <label th:text="${role.authority}" ></label>
                                             </li>
                                         </ul>

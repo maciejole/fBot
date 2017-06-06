@@ -19,12 +19,16 @@ package pl.hycom.pip.messanger.handler.processor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.hycom.pip.messanger.handler.StringToKeywordConverter;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.repository.model.Keyword;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,14 +41,18 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
 
+    @Autowired
+    private StringToKeywordConverter stringToKeywordConverter;
+
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
         log.info("Started keyword generating");
 
         String message = ctx.get(MESSAGE, String.class);
-        Set<String> keywords = extractKeywords(message);
-        log.info("Keywords extracted from message [{}]: {}", message, keywords);
+        Set<String> keywordsStrings = extractKeywords(message);
+        log.info("Keywords extracted from message [{}]: {}", message, keywordsStrings);
 
+        List<Keyword> keywords = stringToKeywordConverter.convertStringsToKeywords(keywordsStrings);
         ctx.put(KEYWORDS, keywords);
         return 1;
     }

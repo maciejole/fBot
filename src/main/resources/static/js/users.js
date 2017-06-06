@@ -25,10 +25,12 @@ $(document).ready(function() {
         $.ajax({
             url: '/admin/users/' + id + '/delete',
             type: 'DELETE',
-            success: function(result) {
-                window.location = "/admin/users"
+            data: {CSRFToken: token, CSRF: header},
+            success: function(xhr, status, error) {
+                window.location = "/admin/users?success=true";
             },
-            error: function (result) {
+            error: function (xhr, status, error) {
+                window.location = "/admin/users?success=false";
             }
         });
     }
@@ -50,6 +52,13 @@ $(document).ready(function() {
             $(this).find('.modal-title').text("Edycja użytkownika");
             $(this).find('.button-submit').text("Aktualizuj");
             $("#id_form_div").show();
+
+            $.ajax({
+                url: "/admin/users/"+userId+"/roles",
+                success: function(data) {
+                    $("#roles_form").val(data);
+                }
+            });
 
             var columns = $("#user-" + userId).find('td');
             $("#id_form").val(columns.eq(0).text());

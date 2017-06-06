@@ -43,12 +43,6 @@ public class RootController {
 
     @RequestMapping("/login")
     public String login(HttpServletRequest request) {
-
-        if (request.isUserInRole("ROLE_ADMIN")) {
-            log.info("Redirecting to home");
-            return home();
-        }
-
         return "login";
     }
 

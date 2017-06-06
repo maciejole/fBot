@@ -18,17 +18,27 @@ package pl.hycom.pip.messanger.config;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 import nz.net.ultraq.thymeleaf.decorators.strategies.GroupingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import pl.hycom.pip.messanger.converter.RoleDtoToStringConverter;
+import pl.hycom.pip.messanger.converter.StringToRoleDtoConverter;
 
 @Configuration
 public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private RoleDtoToStringConverter roleDtoToStringConverter;
+
+    @Autowired
+    private StringToRoleDtoConverter stringToRoleDtoConverter;
 
     @Bean
     public MessageSource messageSource() {
@@ -51,5 +61,11 @@ public class WebMvcConfiguration extends WebMvcConfigurerAdapter {
         public LayoutDialect layoutDialect() {
             return new LayoutDialect(new GroupingStrategy());
         }
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(roleDtoToStringConverter);
+        registry.addConverter(stringToRoleDtoConverter);
     }
 }

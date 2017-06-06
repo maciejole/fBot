@@ -13,10 +13,15 @@
             <strong th:text="${error.field}"></strong>: <span th:text="${error.defaultMessage}"></span>
         </div>
     </div>
+    <div class="alert alert-danger fade in" th:if="${error != null}">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <span th:text="${error.defaultMessage}"></span>
+    </div>
     <div class="account-panel">
-        <form id="account-form" class="form-horizontal" th:action="@{/admin/account/update}" method="post" th:object="${user}" >
+        <form id="account-form" class="form-horizontal" th:action="@{/user/account/update}" method="post" th:object="${user}" >
         <div id="image-container">
-            <img id="profile-image" src="https://s-media-cache-ak0.pinimg.com/236x/61/2a/76/612a76240b86a3085ef5dd0624e0d172.jpg" th:src="${user.profileImageUrl != null} ? ${user.profileImageUrl} : 'https://s-media-cache-ak0.pinimg.com/236x/61/2a/76/612a76240b86a3085ef5dd0624e0d172.jpg'" />
+            <img class="profile-image" th:if="${user.profileImageUrl != null and user.profileImageUrl != '' }" th:src="${user.profileImageUrl}" />
+            <img class="profile-image" th:unless="${user.profileImageUrl != null and user.profileImageUrl != ''}" th:src="'https://image.flaticon.com/icons/svg/126/126327.svg'" />
         </div>
         <div id="inputs-container">
                 <fieldset>
@@ -43,7 +48,7 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="emailInput">E-mail :</label>
                         <div class="col-md-5">
-                            <input id="emailInput" name="emailInput" type="text" placeholder="" class="form-control input-md" required="" disabled="true" th:field="*{email}" />
+                            <input id="emailInput" name="emailInput" type="text" placeholder="example@example.com" class="form-control input-md" required="" disabled="true" th:field="*{email}" />
                         </div>
                     </div>
 
@@ -51,7 +56,7 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="imageInput">Zdjęcie profilowe :</label>
                         <div class="col-md-5">
-                            <input id="imageInput" name="imageInput" type="text" placeholder="" class="form-control input-md"  disabled="true" th:field="*{profileImageUrl}" />
+                            <input id="imageInput" name="imageInput" type="text" placeholder="example.com/image.jpg" class="form-control input-md"  disabled="true" th:field="*{profileImageUrl}" />
                         </div>
                     </div>
 
@@ -59,17 +64,10 @@
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="phoneInput">Numer telefonu :</label>
                         <div class="col-md-5">
-                            <input id="phoneInput" name="phoneInput" type="text" placeholder="" class="form-control input-md" required="" disabled="true" th:field="*{phoneNumber}" />
+                            <input id="phoneInput" name="phoneInput" type="text" placeholder="+48500400300" class="form-control input-md" required="" disabled="true" th:field="*{phoneNumber}" />
                         </div>
                     </div>
 
-                    <!-- Jakies pole-->
-                    <div class="form-group">
-                        <label class="col-md-4 control-label" for="input">Jakaś dana :</label>
-                        <div class="col-md-5">
-                            <input id="input" name="input" type="text" placeholder="" class="form-control input-md"  disabled="true" />
-                        </div>
-                    </div>
                 </fieldset>
         </div>
         </form>

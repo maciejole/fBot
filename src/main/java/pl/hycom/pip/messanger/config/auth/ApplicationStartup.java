@@ -22,11 +22,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
 import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.RoleService;
 import pl.hycom.pip.messanger.service.UserService;
+import pl.hycom.pip.messanger.util.RequestHelper;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -48,6 +52,9 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private HttpServletRequest request;
 
     private final String ROLE_ADMIN = Role.RoleName.ROLE_ADMIN.name();
     private final String ROLE_USER = Role.RoleName.ROLE_USER.name();
@@ -71,7 +78,13 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
         Optional<Role> role = roleService.findRoleByName(ROLE_ADMIN);
         if (role.isPresent()) {
             user.setRoles(Collections.singleton(role.get()));
-            userService.addUser(user);
+//            try {
+//                userService.addUser(user, RequestHelper.getURLBase(request));
+//            } catch (EmailNotUniqueException e) {
+//                e.printStackTrace();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            }
         } else {
             log.warn("ApplicationStartup.initializeAdminUser() - Initializing admin failed!!");
         }

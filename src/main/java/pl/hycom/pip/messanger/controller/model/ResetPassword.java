@@ -24,7 +24,7 @@ public class ResetPassword {
     @Pattern(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     private String userMail;
 
-    @Size(min = 5, max = 64)
+    @Size(min = 6, max = 64)
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,}")
     private String newPassword;
 }

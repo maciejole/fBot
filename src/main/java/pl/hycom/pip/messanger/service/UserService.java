@@ -4,13 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.MapperFacade;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
+import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
 import pl.hycom.pip.messanger.mail.Message;
 import pl.hycom.pip.messanger.model.PasswordResetToken;
 import pl.hycom.pip.messanger.repository.PasswordResetTokenRepository;
@@ -36,8 +40,24 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordResetTokenRepository tokenRepository;
+
+    @Value("${messenger.port:8080}")
+    private String port;
+
+    @Value("${messenger.host:localhost}")
+    private String host;
+
+    @Value("${messenger.protocol:http}")
+    private String protocol;
+
+    @Autowired
+    private EmailService emailService;
+
     @Autowired
     private MapperFacade orikaMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<UserDTO> findAllUsers() {
         log.info("Searching all users");
@@ -52,22 +72,21 @@ public class UserService implements UserDetailsService {
         return orikaMapper.map(userRepository.findOne(id),UserDTO.class);
     }
 
-    public UserDTO addOrUpdateUser(UserDTO user) {
+    public UserDTO addOrUpdateUser(UserDTO user, String requestUrl) throws EmailNotUniqueException{
         User userToUpdateOrAdd = orikaMapper.map(user, User.class);
         if (user.getId() != null && user.getId() != 0) {
-            return updateUser(user);
+            return orikaMapper.map(updateUser(userToUpdateOrAdd, requestUrl), UserDTO.class);
         } else {
-            return orikaMapper.map(addUser(userToUpdateOrAdd), UserDTO.class);
+            return orikaMapper.map(addUser(userToUpdateOrAdd, requestUrl), UserDTO.class);
         }
     }
 
-    public User addUser(User user) {
+    public User addUser(User user, String requestUrl) throws EmailNotUniqueException {
         log.info("Adding user: " + user);
-        setUserRoleIfNoneGranted(user);
-        return userRepository.save(user);
+        return trySaveUser(user, true, requestUrl);
     }
 
-    private void setUserRoleIfNoneGranted(User user) {
+    private void setDefaultRole(User user) {
         log.info("setUserRoleIfNoneGranted method invoked for user: " + user);
         if (CollectionUtils.isEmpty(user.getAuthorities())) {
             roleRepository.findByAuthorityIgnoreCase(Role.RoleName.ROLE_USER.name())
@@ -75,26 +94,46 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public UserDTO updateUser(UserDTO user) {
+    public User updateUser(User user, String requestUrl) throws EmailNotUniqueException {
         log.info("Updating user: " + user);
-        User userToUpdate = userRepository.findOne(orikaMapper.map(user, User.class).getId());
-        Optional<User> userByEmail = userRepository.findByEmail(user.getEmail());
-        if (!(user.getEmail().equals(userToUpdate.getEmail())) && userByEmail.isPresent()) {
-            log.info("User with email: " + user.getEmail() + " exists");
+        User userToUpdate = userRepository.findOne(user.getId());
+        userToUpdate.setFirstName(user.getFirstName());
+        userToUpdate.setLastName(user.getLastName());
+        userToUpdate.setPhoneNumber(user.getPhoneNumber());
+        userToUpdate.setEmail(user.getEmail().toLowerCase());
+        Collection<Role> roles = user.getRoles();
+        if (CollectionUtils.isEmpty(roles)) {
+            setDefaultRole(userToUpdate);
         } else {
-            userToUpdate.setFirstName(user.getFirstName());
-            userToUpdate.setLastName(user.getLastName());
-            userToUpdate.setEmail(user.getEmail());
-            userToUpdate.setPhoneNumber(user.getPhoneNumber());
-            return orikaMapper.map(userRepository.save(userToUpdate),UserDTO.class);
+            userToUpdate.setRoles(roles);
         }
-        return orikaMapper.map(userToUpdate,UserDTO.class);
+        return trySaveUser(userToUpdate, false, requestUrl);
+    }
+
+    private User trySaveUser(User user, boolean isNewUser, String requestUrl) throws EmailNotUniqueException{
+        User userToSave = null;
+        try {
+            userToSave = userRepository.save(user);
+            if (isNewUser) {
+                String token = generateToken();
+                createPasswordResetTokenForUser(userToSave, token);
+                emailService.sendEmail(constructResetTokenEmail(user, token));
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new EmailNotUniqueException(e.getCause());
+        }
+        return userToSave;
     }
 
     public void deleteUser(Integer id) {
         log.info("Deleting user[" + id + "]");
-
         userRepository.delete(id);
+    }
+
+    public boolean isChosenAccountCurrentUser(Integer id) {
+        User auth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findOne(id);
+        return auth.getId().equals(user.getId());
     }
 
     @Override
@@ -147,16 +186,21 @@ public class UserService implements UserDetailsService {
 
     public void changePassword(User user, String password) {
         User userToUpdate = userRepository.findOne(user.getId());
-        userToUpdate.setPassword(password);
+        userToUpdate.setPassword(passwordEncoder.encode((password)));
         userRepository.save(userToUpdate);
         log.info("User " + user.getUsername() + " changed password for " + password);
     }
 
-    public SimpleMailMessage constructResetTokenEmail(String contextPath, User user, String token) {
+    public SimpleMailMessage constructResetTokenEmail(User user, String token) {
         List<String> to = new ArrayList<>();
         to.add(user.getEmail());
-        String url = contextPath + "/user/password/change/reset/token/" + token;
+        String url = protocol + "://" + host + ":" + port + "/account/password/change/reset/token/" + token;
         Message message = new Message("messenger.recommendations2017@gmail.com", to, "Reset password", url);
         return message.constructEmail();
+    }
+
+    //lub Set<String>
+    public Set<Integer> findUserRoles(Integer id) {
+        return userRepository.findOne(id).getRoles().stream().map(Role::getId).collect(Collectors.toSet());
     }
 }

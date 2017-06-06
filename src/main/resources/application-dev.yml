@@ -1,6 +1,9 @@
 messenger:
   pageAccessToken: EAAFPm2dotHsBAJVbUIaFwtekQ5A4zBCL5Kmrq8OFZC18di3qXyRvZCWSxiy3h1tUjnd4eiOM3Ht3L6F6uP4WbUUd1FpP7gVUVJMrj8WJdNi39aM1bGTc5HkDC75MrA0QBOuxfHMO9oenh7xZAMPjMaeZCqGHV8bAHBcRTAfPoAZDZD
   appSecret: bf00817292428306cb0c761941ad4d14
+  host: localhost
+  port: 8080
+  protocol : http
 
 logging:
     level:
@@ -24,6 +27,7 @@ spring:
       auth: true
       starttls.enable: true
       starttls.required: true
+      ssl.trust: smtp.gmail.com
   h2:
     console:
       enabled: true

@@ -14,20 +14,20 @@
  *   limitations under the License.
  */
 
-package pl.hycom.pip.messanger.pipeline;
+package pl.hycom.pip.messanger.converter;
 
-import lombok.NonNull;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
+import pl.hycom.pip.messanger.controller.model.RoleDTO;
 
-public interface PipelineProcessor {
+/**
+ * Created by maciek on 06.06.17.
+ */
+@Component
+public class RoleDtoToStringConverter implements Converter<RoleDTO, String> {
 
-    String SENDER_ID = "senderId";
-    String MESSAGE = "message";
-    String PRODUCTS = "products";
-    String KEYWORDS = "keywords";
-    String KEYWORDS_FOUND = "keywordsFound";
-    String KEYWORD_TO_BE_ASKED = "keywordToBeAsked";
-    String KEYWORDS_EXCLUDED = "keywordsExcluded";
-    String ANSWER = "answer";
-
-    int runProcess(@NonNull PipelineContext ctx) throws PipelineException;
+    @Override
+    public String convert(RoleDTO roleDTO) {
+        return roleDTO.getAuthority();
+    }
 }

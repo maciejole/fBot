@@ -17,6 +17,7 @@
 package pl.hycom.pip.messanger.config.auth;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +26,7 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import pl.hycom.pip.messanger.repository.model.Role;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,9 @@ import java.util.Collection;
 @Slf4j
 @Component
 public class AuthSuccessHandler implements AuthenticationSuccessHandler {
+
+    private final String ADMIN = Role.RoleName.ROLE_ADMIN.name();
+    private final String USER = Role.RoleName.ROLE_USER.name();
 
     @Getter
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -68,30 +73,29 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
-    protected String determineTargetUrl(final Authentication authentication) {
+    private String determineTargetUrl(@NonNull final Authentication authentication) {
         boolean isUser = false;
         boolean isAdmin = false;
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
-                isUser = true;
-                break;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+            if (grantedAuthority.getAuthority().equals(ADMIN)) {
                 isAdmin = true;
                 break;
+            } else if (grantedAuthority.getAuthority().equals(USER)) {
+                isUser = true;
             }
         }
 
-        if (isUser) {
-            return "user";
-        } else if (isAdmin) {
+        if (isAdmin) {
             return "admin";
+        } else if (isUser) {
+            return "user";
         } else {
             throw new IllegalStateException();
         }
     }
 
-    protected final void clearAuthenticationAttributes(final HttpServletRequest request) {
+    private void clearAuthenticationAttributes(final HttpServletRequest request) {
         final HttpSession session = request.getSession(false);
 
         if (session == null) {

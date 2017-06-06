@@ -23,9 +23,11 @@ import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineManager;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.repository.model.Keyword;
 
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @Log4j2
@@ -38,10 +40,13 @@ public class PipelineMessageHandler implements TextMessageEventHandler {
     @Override
     public void handle(TextMessageEvent msg) {
 
+        log.info("Received message - starting prepare answer");
+
         Map<String, Object> params = new HashMap<>();
 
         params.put(PipelineProcessor.SENDER_ID, msg.getSender().getId());
         params.put(PipelineProcessor.MESSAGE, msg.getText());
+        params.put(PipelineProcessor.KEYWORDS_EXCLUDED, new LinkedList<Keyword>());
 
         try {
             pipelineManager.runProcess(PIPELINECHAIN_NAME, params);
