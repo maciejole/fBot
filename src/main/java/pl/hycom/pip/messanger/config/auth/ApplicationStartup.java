@@ -16,20 +16,21 @@
 
 package pl.hycom.pip.messanger.config.auth;
 
-import java.util.Collections;
-import java.util.Optional;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
+import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
 import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.RoleService;
 import pl.hycom.pip.messanger.service.UserService;
+
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Created by Maciek on 2017-05-27.
@@ -50,6 +51,9 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private final String ROLE_ADMIN = Role.RoleName.ROLE_ADMIN.name();
     private final String ROLE_USER = Role.RoleName.ROLE_USER.name();
 
@@ -68,17 +72,15 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     private void initializeAdminUser() {
         log.info("initializeAdminUser method invoked");
 
-        User user = new User("admin", "admin", login, password, "+48923456783");
+        User user = new User("admin", "admin", login, passwordEncoder.encode(password), "+48923456783");
         Optional<Role> role = roleService.findRoleByName(ROLE_ADMIN);
         if (role.isPresent()) {
             user.setRoles(Collections.singleton(role.get()));
-//            try {
-//                userService.addUser(user, RequestHelper.getURLBase(request));
-//            } catch (EmailNotUniqueException e) {
-//                e.printStackTrace();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                userService.addUser(user);
+            } catch (EmailNotUniqueException e) {
+                e.printStackTrace();
+            }
         } else {
             log.warn("ApplicationStartup.initializeAdminUser() - Initializing admin failed!!");
         }
