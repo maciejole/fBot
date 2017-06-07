@@ -1,29 +1,35 @@
 /*
- *   Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package pl.hycom.pip.messanger.handler.processor;
 
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.repository.model.Product;
-
-import java.security.InvalidParameterException;
-import java.util.*;
 
 /**
  * Created by szale_000 on 2017-04-06.
@@ -62,18 +68,19 @@ public class FindKeywordToAskProcessorTest {
 
         List<Keyword> keywordsWanted = Collections.emptyList();
         /*
-        keyword 0 appears in 5 products
-        keyword 1 appears in 4 products
-        keyword 2 appears in 4 products
-        keyword 3 appears in 2 products
-        keyword 4 appears in 3 products
-        Total 6 products, so we want keyword that appears in closest to 3 products (keyword 4)
+         * keyword 0 appears in 5 products
+         * keyword 1 appears in 4 products
+         * keyword 2 appears in 4 products
+         * keyword 3 appears in 2 products
+         * keyword 4 appears in 3 products
+         * Total 6 products, so we want keyword that appears in closest to 3 products (keyword 4)
          */
 
         // when
-        Keyword foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+        Optional<Keyword> foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+
         // then
-        Assertions.assertThat(foundKeyword).isEqualTo(keywords.get(4));
+        Assertions.assertThat(foundKeyword.get()).isEqualTo(keywords.get(4));
     }
 
     @Test
@@ -91,17 +98,18 @@ public class FindKeywordToAskProcessorTest {
 
         List<Keyword> keywordsWanted = Collections.emptyList();
         /*
-        keyword 0 appears in 7 products
-        keyword 1 appears in 7 products
-        keyword 2 appears in 7 products
-        keyword 3 appears in 3 products
-        Total 8 products, so we want keyword that appears in closest to 4 products (keyword 3)
+         * keyword 0 appears in 7 products
+         * keyword 1 appears in 7 products
+         * keyword 2 appears in 7 products
+         * keyword 3 appears in 3 products
+         * Total 8 products, so we want keyword that appears in closest to 4 products (keyword 3)
          */
 
         // when
-        Keyword foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+        Optional<Keyword> foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+
         // then
-        Assertions.assertThat(foundKeyword).isEqualTo(keywords.get(3));
+        Assertions.assertThat(foundKeyword.get()).isEqualTo(keywords.get(3));
     }
 
     @Test
@@ -119,18 +127,19 @@ public class FindKeywordToAskProcessorTest {
 
         List<Keyword> keywordsWanted = Collections.singletonList(keywords.get(3));
         /*
-        keyword 0 appears in 7 products
-        keyword 1 appears in 3 products
-        keyword 2 appears in 7 products
-        keyword 3 appears in 4 products, but appears in user's request
-        keyword 4 appears in 2 products
-        Total 8 products, so we want keyword that appears in closest to 4 products but not in keywordsWanted (keyword 1)
+         * keyword 0 appears in 7 products
+         * keyword 1 appears in 3 products
+         * keyword 2 appears in 7 products
+         * keyword 3 appears in 4 products, but appears in user's request
+         * keyword 4 appears in 2 products
+         * Total 8 products, so we want keyword that appears in closest to 4 products but not in keywordsWanted (keyword 1)
          */
 
         // when
-        Keyword foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+        Optional<Keyword> foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+
         // then
-        Assertions.assertThat(foundKeyword).isEqualTo(keywords.get(1));
+        Assertions.assertThat(foundKeyword.get()).isEqualTo(keywords.get(1));
     }
 
     @Test
@@ -151,30 +160,31 @@ public class FindKeywordToAskProcessorTest {
          * All keywords were mentioned by user so there is no keyword we could possibly ask
          */
         // when
-        Keyword foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+        Optional<Keyword> foundKeyword = sut.findKeywordToAsk(products, keywordsWanted);
+
         // then
-        Assertions.assertThat(foundKeyword).isNull();
+        Assertions.assertThat(foundKeyword.isPresent()).isFalse();
     }
 
     @Test
     public void throwsExceptionWhenEmptyList() throws Exception {
-        //given
+        // given
         List<Product> products = Collections.emptyList();
         List<Keyword> keywordsWanted = Collections.emptyList();
-        //when
+        // when
         Throwable thrown = Assertions.catchThrowable(() -> sut.findKeywordToAsk(products, keywordsWanted));
-        //then
+        // then
         Assertions.assertThat(thrown).isInstanceOf(InvalidParameterException.class);
     }
 
     @Test
     public void throwsExceptionWhenNullList() throws Exception {
-        //given
+        // given
         List<Product> products = null;
         List<Keyword> keywordsWanted = Collections.emptyList();
-        //when
+        // when
         Throwable thrown = Assertions.catchThrowable(() -> sut.findKeywordToAsk(products, keywordsWanted));
-        //then
+        // then
         Assertions.assertThat(thrown).isInstanceOf(InvalidParameterException.class);
     }
 

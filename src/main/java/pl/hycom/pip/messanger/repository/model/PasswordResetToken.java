@@ -1,11 +1,16 @@
-package pl.hycom.pip.messanger.model;
+package pl.hycom.pip.messanger.repository.model;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import lombok.Data;
-import pl.hycom.pip.messanger.repository.model.User;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Created by Piotr on 27.05.2017.

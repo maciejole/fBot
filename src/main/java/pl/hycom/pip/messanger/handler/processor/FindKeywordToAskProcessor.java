@@ -1,37 +1,38 @@
 /*
- *   Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package pl.hycom.pip.messanger.handler.processor;
-
-import javax.annotation.Nullable;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Component;
-import pl.hycom.pip.messanger.pipeline.PipelineContext;
-import pl.hycom.pip.messanger.pipeline.PipelineException;
-import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.messanger.repository.model.Keyword;
-import pl.hycom.pip.messanger.repository.model.Product;
 
 import java.security.InvalidParameterException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
+
+import lombok.extern.log4j.Log4j2;
+import pl.hycom.pip.messanger.pipeline.PipelineContext;
+import pl.hycom.pip.messanger.pipeline.PipelineException;
+import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
 
 /**
  * Created by szale_000 on 2017-04-06.
@@ -52,10 +53,10 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
         @SuppressWarnings("unchecked")
         List<Keyword> keywords = ctx.get(KEYWORDS, List.class);
 
-        Keyword keywordToBeAsked = findKeywordToAsk(products, keywords);
-        if (keywordToBeAsked != null) {
-            ctx.put(KEYWORD_TO_BE_ASKED, keywordToBeAsked);
-            log.info("Added keywordToBeAsked: " + keywordToBeAsked.getWord());
+        Optional<Keyword> keywordToBeAsked = findKeywordToAsk(products, keywords);
+        if (keywordToBeAsked.isPresent()) {
+            ctx.put(KEYWORD_TO_BE_ASKED, keywordToBeAsked.get());
+            log.info("Added keywordToBeAsked: " + keywordToBeAsked.get().getWord());
             return SEND_KEYWORD_QUESTION;
         } else {
             log.info("No keyword to be asked could be found");
@@ -65,17 +66,18 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
 
     /**
      * @param products
-     * @param wantedKeywords Keywordy, które zostały wyciągnięte z zapytań
+     * @param wantedKeywords
+     *            Keywordy, które zostały wyciągnięte z zapytań
      * @return null if no keyword found
      */
-    @Nullable
-    Keyword findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) {
+    Optional<Keyword> findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) {
         if (CollectionUtils.isEmpty(products)) {
             throw new InvalidParameterException("Products cannot be null or empty");
         }
 
         int desiredCount = products.size() / 2;
-        Map.Entry<Keyword, Long> keywordCountEntry = products.parallelStream()
+
+        Optional<Map.Entry<Keyword, Long>> keywordCountEntry = products.parallelStream()
                 .flatMap(product -> product.getKeywords().stream())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
@@ -85,9 +87,9 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
                     return keywordLongEntry;
                 })
                 .sorted(Comparator.comparingLong(Map.Entry::getValue))
-                .findFirst().orElse(null);
+                .findFirst();
 
-        return keywordCountEntry == null ? null : keywordCountEntry.getKey();
+        return keywordCountEntry.isPresent() ? Optional.of(keywordCountEntry.get().getKey()) : Optional.empty();
     }
 
 }

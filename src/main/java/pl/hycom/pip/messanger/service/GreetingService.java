@@ -75,13 +75,10 @@ public class GreetingService implements InitializingBean {
         return availableLocale.containsKey(locale);
     }
 
-
     public List<com.github.messenger4j.profile.Greeting> getGreetingsWithDefaultLocale() {
         List<com.github.messenger4j.profile.Greeting> greetings = getGreetings();
-        if (!greetings.isEmpty()) {
-            if (!containsLocale(greetings, DEFAULT_LOCALE)) {
-                greetings.add(new com.github.messenger4j.profile.Greeting(StringUtils.EMPTY, DEFAULT_LOCALE));
-            }
+        if (!greetings.isEmpty() && !containsLocale(greetings, DEFAULT_LOCALE)) {
+            greetings.add(new com.github.messenger4j.profile.Greeting(StringUtils.EMPTY, DEFAULT_LOCALE));
         }
 
         return greetings;

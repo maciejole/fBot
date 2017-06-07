@@ -1,27 +1,34 @@
 package pl.hycom.pip.messanger.controller;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.security.RolesAllowed;
+import javax.inject.Inject;
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.controller.model.RoleDTO;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
-import pl.hycom.pip.messanger.service.RoleService;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.repository.model.User;
+import pl.hycom.pip.messanger.service.RoleService;
 import pl.hycom.pip.messanger.service.UserService;
-import pl.hycom.pip.messanger.util.RequestHelper;
-
-import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -46,42 +53,36 @@ public class UserController {
     @RolesAllowed(ROLE_ADMIN)
     @PostMapping("/admin/users")
     public String addOrUpdateUser(@Valid UserDTO user, BindingResult bindingResult,
-                                  Model model, HttpServletRequest request) {
+            Model model) {
 
         if (bindingResult.hasErrors()) {
             prepareModel(model, user);
             log.info("Validation user error!" + bindingResult.getAllErrors());
-
             return USERS_VIEW;
         }
 
         try {
-            userService.addOrUpdateUser(user, RequestHelper.getURLBase(request));
+            userService.addOrUpdateUser(user);
             return "redirect:/admin/users";
         } catch (EmailNotUniqueException e) {
             prepareModel(model, user);
             model.addAttribute("error", new ObjectError("validation.error.user.exists", "Użytkownik z takim adresem email już istnieje."));
-            return USERS_VIEW;
-        } catch (MalformedURLException e) {
-            prepareModel(model, user);
-            model.addAttribute("error", new ObjectError("file.error.malformed.url", "Nie udało się wysłać maila do ustawienia hasła."));
             return USERS_VIEW;
         }
     }
 
     @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/admin/users/{userId}/delete")
-    public String deleteUser(@PathVariable("userId") final Integer id, Model model) {
-        boolean result = userService.isChosenAccountCurrentUser(id);
-        if(!result) {
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") final Integer id, Model model, @AuthenticationPrincipal User user) {
+        if (!user.getId().equals(id)) {
             userService.deleteUser(id);
             log.info("User[" + id + "] deleted!");
-            return "redirect:/admin/users";
+            return ResponseEntity.ok(true);
         } else {
             prepareModel(model, new UserDTO());
             ObjectError error = new ObjectError("user.cannot.delete.own.account", "Użytkownik nie może usunąć własnego konta");
             model.addAttribute("error", error);
-            return USERS_VIEW;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
         }
     }
 

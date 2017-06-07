@@ -20,8 +20,8 @@ public class ResetPassword {
     private String resetToken;
 
     @NotNull
-    @Size(min = 6, max = 40)
-    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @Size(min = 6, max = 40, message = "{validation.error.email.size}")
+    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "{validation.error.email.format}")
     private String userMail;
 
     @Size(min = 6, max = 64)

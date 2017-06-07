@@ -1,6 +1,20 @@
 package pl.hycom.pip.messanger.controller;
 
-import lombok.extern.log4j.Log4j2;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,20 +26,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+
+import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.MessengerRecommendationsApplication;
-import pl.hycom.pip.messanger.controller.model.KeywordDTO;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.service.KeywordService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * Created by Piotr on 17.04.2017.
@@ -64,9 +69,11 @@ public class KeywordControllerTest {
         keyword2 = new Keyword();
         keyword2.setWord("test2");
 
-        /*keywordService.addKeyword(keyword);
-        keywordService.addKeyword(keyword1);
-        keywordService.addKeyword(keyword2);*/
+        /*
+         * keywordService.addKeyword(keyword);
+         * keywordService.addKeyword(keyword1);
+         * keywordService.addKeyword(keyword2);
+         */
         list.add(keywordService.addKeyword(keyword).getId());
         list.add(keywordService.addKeyword(keyword1).getId());
         list.add(keywordService.addKeyword(keyword2).getId());
@@ -92,32 +99,29 @@ public class KeywordControllerTest {
         mockMvc.perform(get("/admin/keywords"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("keywords"))
-                .andExpect(model().attribute("keywords",hasSize(3)))
-                .andExpect(model().attribute("keywords",hasItem(allOf(
+                .andExpect(model().attribute("keywords", hasSize(3)))
+                .andExpect(model().attribute("keywords", hasItem(allOf(
                         hasProperty("id", Is.is(list.get(0))),
-                        hasProperty("word", Is.is("test"))
-                ))))
-                .andExpect(model().attribute("keywords",hasItem(allOf(
+                        hasProperty("word", Is.is("test"))))))
+                .andExpect(model().attribute("keywords", hasItem(allOf(
                         hasProperty("id", Is.is(list.get(1))),
-                        hasProperty("word", Is.is("test1"))
-                ))))
-                .andExpect(model().attribute("keywords",hasItem(allOf(
+                        hasProperty("word", Is.is("test1"))))))
+                .andExpect(model().attribute("keywords", hasItem(allOf(
                         hasProperty("id", Is.is(list.get(2))),
-                        hasProperty("word", Is.is("test2"))
-                ))));
+                        hasProperty("word", Is.is("test2"))))));
     }
 
     @Test
     public void deleteById() throws Exception {
         int id = list.get(2);
         mockMvc.perform(delete("/admin/keywords/" + id + "/delete"))
-               .andExpect(status().isFound())
-               .andExpect(view().name("redirect:/admin/keywords"));
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/admin/keywords"));
     }
 
     @Test
     public void addOrUpdateTest() throws Exception {
-        //Given:
+        // Given:
         mockMvc.perform(post("/admin/keywords").param("word", "test1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("keywords"));

@@ -16,16 +16,19 @@
 
 package pl.hycom.pip.messanger.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import pl.hycom.pip.messanger.repository.model.Role;
 
-import java.util.Optional;
+import pl.hycom.pip.messanger.repository.model.Role;
 
 /**
  * Created by Maciek on 2017-05-27.
  */
 @Repository
 public interface RoleRepository extends CrudRepository<Role, Integer> {
+
     Optional<Role> findByAuthorityIgnoreCase(String authority);
+
 }

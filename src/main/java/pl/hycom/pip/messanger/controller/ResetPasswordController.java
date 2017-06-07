@@ -52,13 +52,13 @@ public class ResetPasswordController {
         }
 
         if (userEmail.getUserMail().isEmpty()) {
-            model.addAttribute("error", new ObjectError("mailIsEmpty", "You need to write your email."));
+            model.addAttribute("error", new ObjectError("mailIsEmpty", "Proszę wpisać adres email"));
             return REDIRECT_FORGET_VIEW;
         }
         User user = userService.findUserByEmail(userEmail.getUserMail());
 
         if(user == null) {
-            model.addAttribute("info", new ObjectError("sendOrNotSend", "If user exists, mail was sent."));
+            model.addAttribute("info", new ObjectError("sendOrNotSend", "Email został wysłany"));
             return REDIRECT_FORGET_VIEW;
         }
 
