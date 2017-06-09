@@ -37,7 +37,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "ROLES")
 public class Role implements GrantedAuthority {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1460453314055352293L;
 
     public interface Name {
         String ADMIN = "ROLE_ADMIN";

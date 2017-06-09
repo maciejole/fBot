@@ -34,23 +34,6 @@ public class EmailService {
         }
     }
 
-    /*
-     * private MimeMessage constructEmail(String to, String subject, String content) {
-     * MimeMessage message = javaMailSender.createMimeMessage();
-     * try {
-     * MimeMessageHelper helper = new MimeMessageHelper(message, true);
-     * helper.setTo(to);
-     * helper.setFrom("messenger.recommendations2017@gmail.com");
-     * helper.setSubject(subject);
-     * helper.setText(content, true);
-     *
-     * } catch (MessagingException e) {
-     * log.info(e.getMessage());
-     * }
-     * return message;
-     * }
-     */
-
     /**
      * Created by Piotr on 31.05.2017.
      */

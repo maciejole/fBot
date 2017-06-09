@@ -1,36 +1,37 @@
 /*
- *   Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package pl.hycom.pip.messanger.config.auth;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Collections;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
 import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.RoleService;
 import pl.hycom.pip.messanger.service.UserService;
-
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Created by Maciek on 2017-05-27.
@@ -54,37 +55,33 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private final String ROLE_ADMIN = Role.Name.ADMIN;
-    private final String ROLE_USER = Role.Name.USER;
-
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         log.info("onApplicationEvent method invoked");
 
-        initializeRoleIfNotExists(ROLE_ADMIN);
-        initializeRoleIfNotExists(ROLE_USER);
+        initializeRoleIfNotExists(Role.Name.ADMIN);
+        initializeRoleIfNotExists(Role.Name.USER);
 
         if (userService.findUserByEmail(login) == null) {
             initializeAdminUser();
-        } else {
-            log.warn("Failed to initialize default user!!");
         }
     }
 
     private void initializeAdminUser() {
         log.info("initializeAdminUser method invoked");
 
-        User user = new User("admin", "admin", login, passwordEncoder.encode(password), "+48923456783");
-        Optional<Role> role = roleService.findRoleByName(ROLE_ADMIN);
-        if (role.isPresent()) {
-            user.setRoles(Collections.singleton(role.get()));
-            try {
-                userService.addUser(user);
-            } catch (EmailNotUniqueException e) {
-                log.error("Email is not unique");
-            }
-        } else {
+        Optional<Role> role = roleService.findRoleByName(Role.Name.ADMIN);
+        if (!role.isPresent()) {
             log.warn("ApplicationStartup.initializeAdminUser() - Initializing admin failed!!");
+            return;
+        }
+
+        User user = new User("admin", "admin", login, passwordEncoder.encode(password), "+48923456783");
+        user.setRoles(Collections.singleton(role.get()));
+        try {
+            userService.addUser(user);
+        } catch (EmailNotUniqueException e) {
+            log.error("Email is not unique");
         }
     }
 
@@ -93,8 +90,7 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
 
         Optional<Role> role = roleService.findRoleByName(roleName);
         if (!role.isPresent()) {
-            Role newRole = new Role(roleName);
-            roleService.addRole(newRole);
+            roleService.addRole(new Role(roleName));
         }
     }
 }
