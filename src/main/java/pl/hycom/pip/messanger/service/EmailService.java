@@ -30,7 +30,7 @@ public class EmailService {
             javaMailSender.send(message);
             log.info("Email sent.");
         } catch (Exception e) {
-            log.error("Failed to send email.");
+            log.error("Failed to send email.", e);
         }
     }
 
