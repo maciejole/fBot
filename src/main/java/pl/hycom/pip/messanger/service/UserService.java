@@ -2,7 +2,6 @@ package pl.hycom.pip.messanger.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -97,8 +96,7 @@ public class UserService implements UserDetailsService {
     private void addDefaultRoleIfNeeded(User user) {
         log.info("setUserRoleIfNoneGranted method invoked for user: " + user);
         if (CollectionUtils.isEmpty(user.getAuthorities())) {
-            roleRepository.findByAuthorityIgnoreCase(Role.Name.USER)
-                    .ifPresent(role -> user.setRoles(Collections.singleton(role)));
+            roleRepository.findByAuthorityIgnoreCase(Role.Name.USER).ifPresent(role -> user.getRoles().add(role));
         }
     }
 
@@ -120,22 +118,24 @@ public class UserService implements UserDetailsService {
     }
 
     private User trySaveUser(User user, boolean isNewUser, boolean isCurrentAccount) throws EmailNotUniqueException {
-        User userToSave = null;
         try {
-            userToSave = userRepository.save(user);
+            User userToSave = userRepository.save(user);
+
             if (isNewUser) {
                 String token = generateToken();
                 createPasswordResetTokenForUser(userToSave, token);
                 emailService.sendEmail(constructResetTokenEmail(user, token));
             }
+
             if (isCurrentAccount) {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            return userToSave;
+
         } catch (DataIntegrityViolationException e) {
             throw new EmailNotUniqueException(e.getCause());
         }
-        return userToSave;
     }
 
     public void deleteUser(Integer id) {
