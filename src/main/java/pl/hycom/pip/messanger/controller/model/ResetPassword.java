@@ -1,12 +1,13 @@
 package pl.hycom.pip.messanger.controller.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by Piotr on 03.06.2017.
@@ -25,6 +26,6 @@ public class ResetPassword {
     private String userMail;
 
     @Size(min = 6, max = 64)
-    @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,}")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{6,}$", message = "{validation.error.password.format}")
     private String newPassword;
 }
