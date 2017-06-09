@@ -39,8 +39,9 @@ public class Role implements GrantedAuthority {
 
     private static final long serialVersionUID = 1L;
 
-    public enum RoleName {
-        ROLE_ADMIN, ROLE_USER
+    public interface Name {
+        String ADMIN = "ROLE_ADMIN";
+        String USER = "ROLE_USER";
     }
 
     @Id

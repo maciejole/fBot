@@ -54,18 +54,20 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private final String ROLE_ADMIN = Role.RoleName.ROLE_ADMIN.name();
-    private final String ROLE_USER = Role.RoleName.ROLE_USER.name();
+    private final String ROLE_ADMIN = Role.Name.ADMIN;
+    private final String ROLE_USER = Role.Name.USER;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         log.info("onApplicationEvent method invoked");
 
-        initializeRole(ROLE_ADMIN);
-        initializeRole(ROLE_USER);
+        initializeRoleIfNotExists(ROLE_ADMIN);
+        initializeRoleIfNotExists(ROLE_USER);
 
-        if (userService.findAllUsers().isEmpty()) {
+        if (userService.findUserByEmail(login) == null) {
             initializeAdminUser();
+        } else {
+            log.warn("Failed to initialize default user!!");
         }
     }
 
@@ -79,14 +81,14 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
             try {
                 userService.addUser(user);
             } catch (EmailNotUniqueException e) {
-                e.printStackTrace();
+                log.error("Email is not unique");
             }
         } else {
             log.warn("ApplicationStartup.initializeAdminUser() - Initializing admin failed!!");
         }
     }
 
-    private void initializeRole(final String roleName) {
+    private void initializeRoleIfNotExists(final String roleName) {
         log.info("initializeRole method invoked for role " + roleName);
 
         Optional<Role> role = roleService.findRoleByName(roleName);

@@ -62,11 +62,12 @@
                 </thead>
                 <tbody>
                 <tr th:id="'user-' + ${user.id}" th:each="user : ${users}">
-                    <td class="align-middle" th:text="${user.id}">ID</td>
-                    <td class="align-middle" th:text="${user.email}">Email</td>
-                    <td class="align-middle" th:text="${user.firstName}">Firstname</td>
-                    <td class="align-middle" th:text="${user.lastName}">Lastname</td>
-                    <td class="align-middle" th:text="${user.phoneNumber}">Numer telefonu</td>
+                    <td th:id="'usr-' + ${user.id}+'-id'" class="align-middle" th:text="${user.id}">ID</td>
+                    <td th:id="'usr-' + ${user.id}+'-email'" class="align-middle" th:text="${user.email}">Email</td>
+                    <td th:id="'usr-' + ${user.id}+'-name'" class="align-middle" th:text="${user.firstName}">Firstname</td>
+                    <td th:id="'usr-' + ${user.id}+'-surname'" class="align-middle" th:text="${user.lastName}">Lastname</td>
+                    <td th:id="'usr-' + ${user.id}+'-phone'" class="align-middle" th:text="${user.phoneNumber}">Numer telefonu</td>
+                    <td class="hidden roles" style="display:none; visibility:hidden;" th:each="role : ${user.roles}" th:text="${role.id}" th:id="'usr-' + ${user.id} + '-role-' + ${role.id}"></td>
                     <td class="align-middle">
                         <div data-placement="top" data-toggle="tooltip" title="Edytuj">
                             <button class="btn btn-primary btn-xs button-edit center-block"
@@ -154,9 +155,15 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label" for="roles_form">Role</label>
                                     <div class="col-sm-9">
-                                        <ul>
+                                        <table>
+                                            <tr th:each="var : ${model}">
+                                                <td th:text="${var.key}"></td>
+                                                <td th:text="${var.value}"></td>
+                                            </tr>
+                                        </table>
+                                        <ul id="roles_form">
                                             <li th:each="role : ${authorities}">
-                                                <input type="checkbox" name="role" th:field="*{roles}" th:value="${role.id}" id="roles_form"/>
+                                                <input type="checkbox" name="role" th:field="*{roles}" th:value="${role.id}" class="roles_form"/>
                                                 <label th:text="${role.authority}" ></label>
                                             </li>
                                         </ul>

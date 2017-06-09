@@ -17,6 +17,7 @@
 
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 	layout:decorator="layout">
 <head>
     <title>Dashboard</title>
@@ -31,7 +32,7 @@
         </div>
             
         <div class="row row-eq-height">
-	         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+	         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12" sec:authorize="isAuthenticated()">
 	             <div class="panel panel-primary">
 	                 <div class="panel-heading">
 	                     <div class="row">
@@ -53,7 +54,7 @@
 	             </div>
 	         </div>
 	         
-	         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+	         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12" sec:authorize="isAuthenticated()">
 	             <div class="panel panel-green">
 	                 <div class="panel-heading">
 	                     <div class="row">
@@ -75,7 +76,7 @@
 	             </div>
 	         </div>
 
-            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12" sec:authorize="isAuthenticated()">
                 <div class="panel panel-yellow">
                     <div class="panel-heading">
                         <div class="row">
@@ -97,7 +98,7 @@
                 </div>
             </div>
 
-			<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+			<div class="col-lg-4 col-md-6 col-sm-12 col-xs-12" sec:authorize="hasRole('ROLE_ADMIN')">
 				<div class="panel panel-red">
 					<div class="panel-heading">
 						<div class="row">

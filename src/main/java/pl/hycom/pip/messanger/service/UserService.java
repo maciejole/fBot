@@ -99,7 +99,7 @@ public class UserService implements UserDetailsService {
     private void setDefaultRole(User user) {
         log.info("setUserRoleIfNoneGranted method invoked for user: " + user);
         if (CollectionUtils.isEmpty(user.getAuthorities())) {
-            roleRepository.findByAuthorityIgnoreCase(Role.RoleName.ROLE_USER.name())
+            roleRepository.findByAuthorityIgnoreCase(Role.Name.USER)
                     .ifPresent(role -> user.setRoles(Collections.singleton(role)));
         }
     }
@@ -160,7 +160,7 @@ public class UserService implements UserDetailsService {
 
     public User findUserByEmail(String email) {
         log.info("findUserByEmail method from UserService invoked");
-        return userRepository.findByEmail(email).get();
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     public void createPasswordResetTokenForUser(User user, String token) {
@@ -210,8 +210,4 @@ public class UserService implements UserDetailsService {
         return message.constructEmail();
     }
 
-    // lub Set<String>
-    public Set<Integer> findUserRoles(Integer id) {
-        return userRepository.findOne(id).getRoles().stream().map(Role::getId).collect(Collectors.toSet());
-    }
 }

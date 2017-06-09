@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.UserService;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -45,6 +47,7 @@ public class AccountController {
         return "redirect:/admin";
     }
 
+    @RolesAllowed(Role.Name.ADMIN)
     @GetMapping("/user/account/{userId}")
     public String showAccount(Model model, @PathVariable("userId") final Integer userId) {
         UserDTO user =userService.findUserById(userId);

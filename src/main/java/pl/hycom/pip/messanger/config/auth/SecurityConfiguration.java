@@ -37,28 +37,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthSuccessHandler successHandler;
-
-    private static final String ROLE_ADMIN = Role.RoleName.ROLE_ADMIN.name();
-    private static final String ROLE_USER = Role.RoleName.ROLE_USER.name();
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
                 .antMatchers("/db-admin/console/**").permitAll()
-                .antMatchers("/admin/**").hasAuthority(ROLE_ADMIN)
-                .antMatchers("/user/**").hasAnyAuthority(ROLE_ADMIN, ROLE_USER)
                 .antMatchers("/account/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").failureUrl("/login-error.html").successHandler(successHandler).permitAll();
+                .formLogin().loginPage("/login").failureUrl("/login-error.html").successForwardUrl("/admin").permitAll();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
-        authManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());;
+        authManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 
     @Override

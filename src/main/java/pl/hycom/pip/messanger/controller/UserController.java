@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.controller.model.RoleDTO;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.RoleService;
 import pl.hycom.pip.messanger.service.UserService;
@@ -41,7 +42,7 @@ public class UserController {
 
     private final RoleService roleService;
 
-    private static final String ROLE_ADMIN = "ADMIN";
+    private static final String ROLE_ADMIN = Role.Name.ADMIN;
 
     @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/admin/users")
@@ -89,19 +90,9 @@ public class UserController {
     private void prepareModel(Model model, UserDTO user) {
         List<UserDTO> allUsers = userService.findAllUsers();
         List<RoleDTO> allRoles = roleService.findAllRoles();
-        List<Integer> rolesIDs = allRoles.stream().mapToInt(RoleDTO::getId).boxed().collect(Collectors.toList());
-        model.addAttribute("rolesId", rolesIDs);
         model.addAttribute("users", allUsers);
         model.addAttribute("userForm", user);
         model.addAttribute("authorities", allRoles);
     }
 
-    @RolesAllowed(ROLE_ADMIN)
-    @GetMapping("/admin/users/{userId}/roles")
-    @ResponseBody
-    public Set<Integer> getUserRoles(@PathVariable("userId") final Integer id) {
-        log.info("Searching for user's [" + id + "] roles");
-
-        return userService.findUserRoles(id);
-    }
 }
