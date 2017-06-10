@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.hycom.pip.messanger.nlp.Result;
 
+import javax.ws.rs.GET;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
-    @GetMapping(value = "/admin/nlp")
+    @RequestMapping(value = "/admin/nlp" , method = RequestMethod.GET)
     public String returnView(Model model) {
             model.addAttribute("lista", outputList);
             return NLP_VIEW;
