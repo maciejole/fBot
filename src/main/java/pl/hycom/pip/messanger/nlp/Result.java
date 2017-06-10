@@ -36,6 +36,7 @@ public class Result {
     public Result(String base, String result) {
        this.base = base;
        this.result = result;
+       this.keyword = "brak keyworda";
 
 
    }
