@@ -50,6 +50,8 @@ public abstract class PipelineMessageHandler {
         } else if (msg instanceof QuickReplyMessageEvent) {
             params.put(PipelineProcessor.ANSWER, ((QuickReplyMessageEvent)msg).getText());
             params.put(PipelineProcessor.EVENT_TYPE, EventType.quickReply);
+            //TODO: pull stuff out of payload in processor.
+            params.put(PipelineProcessor.PAYLOAD, ((QuickReplyMessageEvent)msg).getQuickReply().getPayload());
         }
         try {
             pipelineManager.runProcess(PIPELINECHAIN_NAME, params);

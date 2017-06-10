@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.hycom.pip.messanger.handler.StringToKeywordConverter;
+import pl.hycom.pip.messanger.handler.model.EventType;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
@@ -46,6 +47,11 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
+        EventType eventType = ctx.get(EVENT_TYPE, EventType.class);
+        if (eventType != EventType.message) {
+            return 1;
+        }
+
         log.info("Started keyword generating");
 
         String message = ctx.get(MESSAGE, String.class);
