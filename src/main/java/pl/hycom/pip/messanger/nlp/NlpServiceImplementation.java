@@ -45,8 +45,8 @@ public class NlpServiceImplementation implements NlpService {
 
     }
 
-    public List<Result> inputStreamToResultList(InputStream is) {
-        List<Result> resultList = new ArrayList<>();
+    public ArrayList<Result> inputStreamToResultList(InputStream is) {
+        ArrayList<Result> resultList = new ArrayList<Result>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 
@@ -75,7 +75,7 @@ public class NlpServiceImplementation implements NlpService {
     }
 
     @Override
-    public List<Result> matchKeywords(List<Result> list) {
+    public ArrayList<Result> matchKeywords(ArrayList<Result> list) {
         log.info("Method for matching keywords was called");
         for (Result result : list) {
             if (((keywordService.findKeywordByWord(result.getResult())) != null)) {
@@ -89,7 +89,7 @@ public class NlpServiceImplementation implements NlpService {
         return list;
     }
 
-    public List<Result> nlpGetOutput(String id) throws IOException {
+    public ArrayList<Result> nlpGetOutput(String id) throws IOException {
         URL url = new URL(NLPrestURL + "download" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -135,7 +135,7 @@ public class NlpServiceImplementation implements NlpService {
 
     }
 
-    public List<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
+    public ArrayList<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
         String id = nlpStringSender(message);
         JSONObject liner2 = new JSONObject();
         liner2.put("model", "top9");
