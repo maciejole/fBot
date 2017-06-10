@@ -20,7 +20,7 @@ import java.util.List;
 @Log4j2
 @Controller
 public class NLPController {
-//
+    //
     @Autowired
     private NlpServiceImplementation nlpService;
 
@@ -32,10 +32,13 @@ public class NLPController {
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
     public String returnView(Model model) {
         List<Result> temp = outputList;
+
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
         }
-        model.addAttribute("lista",temp);
+
+        model.addAttribute("lista", temp);
+        outputList.clear();
         return NLP_VIEW;
     }
 }

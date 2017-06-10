@@ -78,9 +78,10 @@ public class NlpServiceImplementation implements NlpService {
     public List<Result> matchKeywords(List<Result> list) {
         log.info("Method for matching keywords was called");
         for (Result result : list) {
-            if ((keywordService.findKeywordByWord(result.getResult()).getWord()) != null) {
-                result.setKeyword(keywordService.findKeywordByWord(result.getResult()).getWord());
-            }
+//            if ((keywordService.findKeywordByWord(result.getResult()).getWord()) != null) {
+//                result.setKeyword(keywordService.findKeywordByWord(result.getResult()).getWord());
+//            }
+            result.setKeyword("test");
         }
         return list;
     }
