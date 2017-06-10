@@ -28,9 +28,9 @@
         </tr>
         <tr th:id="lista" th:each="result: ${lista}">
 
-            <td class="align-middle" th:text="${result.base}">ID</td>
-            <td class="align-middle"><strong th:text="${result.result}">Word</strong></td>
-            <td class="align-middle"><strong th:text="${result.keyword}">Word</strong></td>
+            <td class="align-middle" th:text="${result.base}">Base</td>
+            <td class="align-middle"><strong th:text="${result.result}">Result</strong></td>
+            <td class="align-middle"><strong th:text="${result.keyword != null} ? ${result.keyword} : 'brak keyworda'">Keyword</strong></td>
             <td class="align-middle text-center"></td>
         </tr>
     </table>
