@@ -1,5 +1,6 @@
 package pl.hycom.pip.messanger.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import pl.hycom.pip.messanger.nlp.NlpService;
 import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
 import pl.hycom.pip.messanger.nlp.Result;
+import pl.hycom.pip.messanger.service.KeywordService;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +22,13 @@ import java.util.List;
  */
 @Log4j2
 @Controller
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class NLPController {
-    //
-    @Autowired
-    private NlpServiceImplementation nlpService;
+
+
 
     public static List<Result> outputList = new ArrayList<>();
+    private final NlpService nlpService;
 
 
     private static final String NLP_VIEW = "nlp";

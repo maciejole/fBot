@@ -33,8 +33,8 @@ import java.util.List;
 @Configuration(value = "nlpService")
 public class NlpServiceImplementation implements NlpService {
 
-
-    KeywordService keywordService;
+    @Autowired
+    private KeywordService keywordService;
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
 
