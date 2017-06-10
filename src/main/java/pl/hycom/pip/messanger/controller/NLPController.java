@@ -31,8 +31,7 @@ public class NLPController {
 
     @RequestMapping(value = "/admin/nlp" , method = RequestMethod.GET)
     public String returnView(Model model) {
-            nlpService.matchKeywords(outputList);
-            model.addAttribute("lista", outputList);
+            model.addAttribute("lista", nlpService.matchKeywords(outputList));
             return NLP_VIEW;
     }
 }
