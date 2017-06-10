@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import pl.hycom.pip.messanger.controller.NLPController;
+import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
@@ -42,7 +43,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     @Autowired
     @Qualifier("nlpService")
-    private NlpService nlpService;
+    private NlpServiceImplementation nlpService;
 
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
 
