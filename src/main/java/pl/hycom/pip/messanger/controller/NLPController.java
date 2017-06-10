@@ -1,15 +1,12 @@
 package pl.hycom.pip.messanger.controller;
 
 import lombok.extern.log4j.Log4j2;
-import org.json.JSONException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import pl.hycom.pip.nlp.Result;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import pl.hycom.pip.messanger.nlp.Result;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,30 +20,20 @@ public class NLPController {
     public static List<Result> outputList = new ArrayList<>();
 
 
-    private static String NLP_VIEW = "nlp";
-    private static  String NLP_RESULT = "nlpResult";
+    private static final String NLP_VIEW = "nlp";
 
-        @RequestMapping(value = "/admin/nlp" , method = RequestMethod.GET)
-        public String returnView(Model model) {
-        return NLP_VIEW;
-
+    @PostMapping(value = "/admin/nlp")
+    public String returnView(Model model, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getFieldErrors());
+            log.info("Error during preparing view");
+            return NLP_VIEW;
+        } else {
+            model.addAttribute("lista", outputList);
+            return NLP_VIEW;
         }
-
-    @RequestMapping(value = "/admin/nlp" , method = RequestMethod.POST)
-    public String metoda(Model model , @RequestParam String txtInput) throws IOException, InterruptedException, JSONException {
-         return NLP_VIEW;
-
     }
-
-    @RequestMapping(value = "/admin/nlpResult" , method = RequestMethod.GET)
-    public String result(Model model) {
-            model.addAttribute("lista" , outputList);
-            return NLP_RESULT;
-
-    }
-
-
-    }
+}
 
 
 

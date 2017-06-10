@@ -1,4 +1,4 @@
-package pl.hycom.pip.nlp;
+package pl.hycom.pip.messanger.nlp;
 
 /**
  * Created by Piotr on 2017-06-05.

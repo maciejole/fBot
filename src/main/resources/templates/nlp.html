@@ -2,22 +2,33 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layout">
 <head>
+    <title>PolishNLP result </title>
 
 </head>
 <body>
 <div layout:fragment="content">
 
-    <div class="form-control ">
-        <form method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <input type="text" name="txtInput" value="" />
-            <input type="submit" name="test" value="Analiza tekstu"/>
-        </form>
+    <table th:align="center" border="3" th:width="500">
+
+        <tr>
+            <td>
+                Słowo bazowe
+            </td>
+            <td>
+                Po analizie
+            </td>
+        </tr>
+        <tr th:id="lista" th:each="result: ${lista}">
+
+            <td class="align-middle" th:text="${result.base}">ID</td>
+            <td class="align-middle"><strong th:text="${result.result}">Word</strong></td>
+            <td class="align-middle text-center"></td>
+        </tr>
+    </table>
+    <div class="form-control">
+        <button onclick="location.href = 'PolishNLP'">Powrót</button>
     </div>
 
-    <div class="form-control">
-        <button onclick="location.href = 'nlpResult'">Wynik analizy</button>
-    </div>
 
 </div>
 

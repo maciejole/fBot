@@ -19,12 +19,13 @@ package pl.hycom.pip.messanger.handler.processor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.hycom.pip.messanger.controller.NLPController;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.nlp.Analyze;
+import pl.hycom.pip.messanger.nlp.NlpService;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -35,7 +36,11 @@ import java.util.stream.Collectors;
  */
 @Component
 @Log4j2
+
 public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
+
+    @Autowired
+    private NlpService nlpService;
 
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
 
@@ -62,13 +67,11 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
         String out = message;
         try {
-            NLPController.outputList = Analyze.analyze(message);
-        }
-        catch (Exception ex) {
-            log.error(ex.getMessage() + "Error during passing ResultList to Controller ");
+            NLPController.outputList = nlpService.analyze(message);
+        } catch (Exception ex) {
+            log.error("Error during passing message to analyze method {}" + ex.getMessage());
         }
 
-        //Analyze.analyze(message);
 
         out = StringUtils.replaceAll(out, CHARS_TO_REMOVE_REGEX, StringUtils.EMPTY);
         out = StringUtils.lowerCase(out);
