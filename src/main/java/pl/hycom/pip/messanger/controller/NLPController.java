@@ -22,16 +22,10 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
-    @PostMapping(value = "/admin/nlp")
-    public String returnView(Model model, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getFieldErrors());
-            log.info("Error during preparing view");
-            return NLP_VIEW;
-        } else {
+    @GetMapping(value = "/admin/nlp")
+    public String returnView(Model model) {
             model.addAttribute("lista", outputList);
             return NLP_VIEW;
-        }
     }
 }
 

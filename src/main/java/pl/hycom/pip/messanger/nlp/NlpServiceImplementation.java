@@ -3,6 +3,7 @@ import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
+import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @Log4j2
 @Service
+@Configuration(value = "nlpService")
 public class NlpServiceImplementation implements NlpService {
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";

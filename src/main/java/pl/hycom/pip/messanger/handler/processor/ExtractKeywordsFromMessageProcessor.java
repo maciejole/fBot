@@ -20,6 +20,7 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import pl.hycom.pip.messanger.controller.NLPController;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     @Autowired
+    @Qualifier("nlpService")
     private NlpService nlpService;
 
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
