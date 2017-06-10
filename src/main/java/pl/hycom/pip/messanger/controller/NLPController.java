@@ -33,7 +33,7 @@ public class NLPController {
 
 
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
-    public String returnView(List<Result> outputList) {
+    public String returnView(ArrayList<Result> outputList) {
         List<Result> temp = outputList;
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
