@@ -21,8 +21,8 @@ import java.util.List;
 @Controller
 public class NLPController {
 //
-//    @Autowired
-//    private NlpService nlpService;
+    @Autowired
+    private NlpServiceImplementation nlpService;
 
     public static List<Result> outputList = new ArrayList<>();
 
@@ -32,9 +32,9 @@ public class NLPController {
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
     public String returnView(Model model) {
         List<Result> temp = outputList;
-//        if (!outputList.isEmpty()) {
-//            temp = nlpService.matchKeywords(outputList);
-//        }
+        if (!outputList.isEmpty()) {
+            temp = nlpService.matchKeywords(outputList);
+        }
         model.addAttribute("lista",temp);
         return NLP_VIEW;
     }
