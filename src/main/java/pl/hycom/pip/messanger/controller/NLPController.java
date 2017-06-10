@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import pl.hycom.pip.messanger.controller.model.KeywordDTO;
 import pl.hycom.pip.messanger.nlp.NlpService;
 import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
 import pl.hycom.pip.messanger.nlp.Result;
@@ -31,9 +32,14 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
+    @GetMapping("/admin/nlp")
+    public String showView(Model model) {
+        return NLP_VIEW;
+    }
 
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
-    public String returnView(ArrayList<Result> outputList) {
+
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
+    public String returnResult(ArrayList<Result> outputList) {
         List<Result> temp = outputList;
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
