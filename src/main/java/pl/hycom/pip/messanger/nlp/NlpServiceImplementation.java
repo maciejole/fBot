@@ -76,6 +76,7 @@ public class NlpServiceImplementation implements NlpService {
 
     @Override
     public List<Result> matchKeywords(List<Result> list) {
+        log.info("Method for matching keywords was called");
         for (Result result : list) {
             if (keywordService.findKeywordByWord(result.getResult()).toString() != null) {
                 result.setKeyword(keywordService.findKeywordByWord(result.getResult()).toString());

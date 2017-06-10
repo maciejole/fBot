@@ -22,7 +22,7 @@ import java.util.List;
 public class NLPController {
 
     @Autowired
-    NlpServiceImplementation nlpService;
+    NlpService nlpService;
 
     public static List<Result> outputList = new ArrayList<>();
 
