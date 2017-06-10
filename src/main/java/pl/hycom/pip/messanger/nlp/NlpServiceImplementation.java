@@ -1,5 +1,4 @@
 package pl.hycom.pip.messanger.nlp;
-import com.sun.istack.internal.Nullable;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,8 +100,7 @@ public class NlpServiceImplementation implements NlpService {
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(new EntityResolver() {
                 @Override
-                @Nullable
-                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                  public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
                     return systemId.contains("ccl.dtd") ? new InputSource(new StringReader("")) : null;
                 }
             });
