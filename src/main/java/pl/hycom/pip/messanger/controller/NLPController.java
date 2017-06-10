@@ -29,10 +29,11 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
-    @RequestMapping(value = "/admin/nlp" , method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
     public String returnView(Model model) {
-            model.addAttribute("lista", nlpService.matchKeywords(outputList));
-            return NLP_VIEW;
+    List<Result> temp = nlpService.matchKeywords(outputList);
+        model.addAttribute("lista", outputList);
+        return NLP_VIEW;
     }
 }
 
