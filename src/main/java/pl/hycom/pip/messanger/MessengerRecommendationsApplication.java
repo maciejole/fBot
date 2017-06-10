@@ -19,7 +19,7 @@ package pl.hycom.pip.messanger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"pl.hycom.pip.messanger.nlp"})
 public class MessengerRecommendationsApplication {
 
 	public static void main(String[] args) {
