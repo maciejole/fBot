@@ -33,7 +33,7 @@ import java.util.List;
 @Configuration(value = "nlpService")
 public class NlpServiceImplementation implements NlpService {
 
-    @Autowired
+
     private KeywordService keywordService;
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
@@ -69,7 +69,7 @@ public class NlpServiceImplementation implements NlpService {
 
 
         } catch (Exception ex) {
-            log.error(ex.getMessage() + " Error during calling inputStreamToNodeList method ");
+            log.error("Exception, with message: '"+ex.getMessage() +"' occured while deserializing response to Result object. Deserialized result is: " + resultList, ex);
         }
         return resultList;
     }
@@ -99,8 +99,9 @@ public class NlpServiceImplementation implements NlpService {
 
 
     public String getRes(Response res) throws IOException {
-        if (res.getStatus() != 200)
+        if (res.getStatus() != 200) {
             throw new IOException("Error in nlprest processing");
+        }
         return res.readEntity(String.class);
 
     }
@@ -120,9 +121,13 @@ public class NlpServiceImplementation implements NlpService {
             String res = getRes(client.target(NLPrestURL + "getStatus/" + taskid).request().get());
             jsonres = new JSONObject(res);
             status = jsonres.getString("status");
-            if (("ERROR").equals(status)) throw new IOException("Error in processing");
-            if (("DONE").equals(status))
+            if (("ERROR").equals(status)) {
+                throw new IOException("Error in processing");
+            }
+            if (("DONE").equals(status)) {
                 Thread.sleep(500);
+            }
+
         }
 
         return jsonres.getJSONArray("value").getJSONObject(0).getString("fileID");

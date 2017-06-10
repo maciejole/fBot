@@ -44,6 +44,8 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
     @Autowired
     @Qualifier("nlpService")
     private NlpService nlpService;
+    @Autowired
+    private NLPController nlpController;
 
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
 
@@ -70,7 +72,8 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
         String out = message;
         try {
-            NLPController.outputList = nlpService.analyze(message);
+            //NLPController.outputList =
+            nlpController.returnView(nlpService.analyze(message));
             log.info("Method to analyze text was called ");
         } catch (Exception ex) {
             log.error("Error during passing message to analyze method {}" + ex.getMessage());

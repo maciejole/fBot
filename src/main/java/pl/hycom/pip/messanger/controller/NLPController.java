@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import pl.hycom.pip.messanger.nlp.NlpService;
 import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
 import pl.hycom.pip.messanger.nlp.Result;
@@ -25,24 +26,24 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class NLPController {
 
-
-
-    public static List<Result> outputList = new ArrayList<>();
     private final NlpService nlpService;
 
 
     private static final String NLP_VIEW = "nlp";
 
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
-    public String returnView(Model model) {
-        List<Result> temp = outputList;
 
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
+    public String returnView(List<Result> outputList) {
+        List<Result> temp = outputList;
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
         }
-        model.addAttribute("lista", temp);
+        ModelAndView mav = new ModelAndView("/admin/nlp");
+        mav.addObject("lista" , temp);
         return NLP_VIEW;
     }
+
+
 }
 
 
