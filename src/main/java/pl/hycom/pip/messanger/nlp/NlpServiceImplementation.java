@@ -3,12 +3,14 @@ import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import pl.hycom.pip.messanger.service.KeywordService;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -29,6 +31,9 @@ import java.util.List;
 @Service
 @Configuration(value = "nlpService")
 public class NlpServiceImplementation implements NlpService {
+
+
+    KeywordService keywordService;
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
 
@@ -65,6 +70,14 @@ public class NlpServiceImplementation implements NlpService {
             log.error(ex.getMessage() + " Error during calling inputStreamToNodeList method ");
         }
         return resultList;
+    }
+
+    @Override
+    public List<Result> matchKeywords(List<Result> list) {
+        for ( Result result: list   ) {
+            result.setKeyword(keywordService.findKeywordByWord(result.getResult()).toString());
+        }
+        return list;
     }
 
     public  List<Result> nlpGetOutput(String id) throws IOException {

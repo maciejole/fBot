@@ -7,6 +7,15 @@ public class Result {
 
     private String base;
     private  String result;
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 
     public String getBase() {
         return base;

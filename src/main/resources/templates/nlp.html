@@ -2,31 +2,40 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layout">
 <head>
-    <title>PolishNLP result </title>
+    <title>NLP</title>
 
 </head>
 <body>
 <div layout:fragment="content">
+    <div class="row">
+        <h1 class="page-header">
+            Wynik analizy przesłanego tekstu
+        </h1>
+    </div>
 
-    <table th:align="center" border="3" th:width="500">
-
-        <tr>
-            <td>
+    <table class="row" th:class="table" th:align="center" border="3" th:width="500">
+        <tr th:class="table-row-cell">
+            <td th:class="content">
                 Słowo bazowe
             </td>
-            <td>
+            <td th:class="content">
                 Po analizie
             </td>
+            <td th:class="content">
+                Keyword
+            </td>
+
         </tr>
         <tr th:id="lista" th:each="result: ${lista}">
 
             <td class="align-middle" th:text="${result.base}">ID</td>
             <td class="align-middle"><strong th:text="${result.result}">Word</strong></td>
+            <td class="align-middle"><strong th:text="${result.keyword}">Word</strong></td>
             <td class="align-middle text-center"></td>
         </tr>
     </table>
-    <div class="form-control">
-        <button onclick="location.href = 'PolishNLP'">Powrót</button>
+    <div class="row">
+        <button class="btn btn-primary pull-right" type="reset">Refresh</button>
     </div>
 
 

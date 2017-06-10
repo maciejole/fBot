@@ -20,6 +20,7 @@ public interface NlpService {
     public  String nlpProcess(String toolName, String id, JSONObject options) throws IOException, InterruptedException, JSONException;
     public  List<Result> analyze(String message) throws IOException, InterruptedException, JSONException;
     public  List<Result> inputStreamToResultList(InputStream is) ;
+    public List<Result> matchKeywords(List<Result> list);
 
 
 }
