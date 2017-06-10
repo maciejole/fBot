@@ -38,16 +38,41 @@ public class NlpServiceImplementation  {
         return ClientBuilder.newClient().target(NLPrestURL + "upload").request().post(Entity.entity(messageToBeAnalyze, MediaType.TEXT_PLAIN)).readEntity(String.class);
 
     }
+    public static List<Result> inputStreamToResultList(InputStream is) {
+        List<Result> resultList = new ArrayList<>();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
+
+        try {
+
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            builder.setEntityResolver(new EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+                    return systemId.contains("ccl.dtd") ? new InputSource(new StringReader("")) : null;
+                }
+            });
+            Document doc = builder.parse(is);
+            NodeList orthList = doc.getElementsByTagName("orth");
+            NodeList baseList = doc.getElementsByTagName("base");
+            for (int i = 0; i < baseList.getLength(); i++) {
+
+                resultList.add(new Result(orthList.item(i).getTextContent(), baseList.item(i).getTextContent()));
+            }
+
+
+        } catch (Exception ex) {
+            log.error(ex.getMessage() + " Error during calling inputStreamToNodeList method ");
+        }
+        return resultList;
+    }
 
     public static List<Result> nlpGetOutput(String id) throws IOException {
         URL url = new URL(NLPrestURL + "download" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
         conn.setRequestMethod("GET");
-        InputStream is = conn.getInputStream();
-        conn.disconnect();
-        return inputStreamToResultList(is);
+        return inputStreamToResultList(conn.getInputStream());
     }
 
 
@@ -92,34 +117,7 @@ public class NlpServiceImplementation  {
 
     }
 
-    public static List<Result> inputStreamToResultList(InputStream is) {
-        List<Result> resultList = new ArrayList<>();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-
-        try {
-
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            builder.setEntityResolver(new EntityResolver() {
-                @Override
-                  public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                    return systemId.contains("ccl.dtd") ? new InputSource(new StringReader("")) : null;
-                }
-            });
-            Document doc = builder.parse(is);
-            NodeList orthList = doc.getElementsByTagName("orth");
-            NodeList baseList = doc.getElementsByTagName("base");
-            for (int i = 0; i < baseList.getLength(); i++) {
-
-                resultList.add(new Result(orthList.item(i).getTextContent(), baseList.item(i).getTextContent()));
-            }
-
-
-        } catch (Exception ex) {
-            log.error(ex.getMessage() + " Error during calling inputStreamToNodeList method ");
-        }
-        return resultList;
-    }
 
 
 }
