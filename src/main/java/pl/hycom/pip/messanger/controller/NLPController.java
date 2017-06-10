@@ -36,9 +36,7 @@ public class NLPController {
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
         }
-
         model.addAttribute("lista", temp);
-        outputList.clear();
         return NLP_VIEW;
     }
 }
