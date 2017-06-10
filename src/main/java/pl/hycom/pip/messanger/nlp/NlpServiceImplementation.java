@@ -81,6 +81,9 @@ public class NlpServiceImplementation implements NlpService {
             if (keywordService.findKeywordByWord(result.getResult()).getWord() != null) {
                 result.setKeyword(keywordService.findKeywordByWord(result.getResult()).getWord());
             }
+            else {
+                result.setKeyword("brak keyworda");
+            }
 
         }
         return list;
