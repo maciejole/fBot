@@ -70,7 +70,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
         String out = message;
         try {
-            NLPController.outputList = nlpService.analyze(message);
+            NLPController.outputList = NlpServiceImplementation.analyze(message);
         } catch (Exception ex) {
             log.error("Error during passing message to analyze method {}" + ex.getMessage());
         }

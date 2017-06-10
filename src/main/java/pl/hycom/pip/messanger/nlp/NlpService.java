@@ -18,7 +18,7 @@ public interface NlpService {
     public List<Result> nlpGetOutput(String id) throws IOException;
     public  String getRes(Response res) throws IOException;
     public  String nlpProcess(String toolName, String id, JSONObject options) throws IOException, InterruptedException, JSONException;
-    public  List<Result> analyze(String message) throws IOException, InterruptedException, JSONException;
+    //public  List<Result> analyze(String message) throws IOException, InterruptedException, JSONException;
     public  List<Result> inputStreamToResultList(InputStream is) ;
 
 

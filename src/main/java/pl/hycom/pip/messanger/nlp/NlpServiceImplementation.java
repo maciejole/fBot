@@ -28,19 +28,19 @@ import java.util.List;
 @Log4j2
 @Service
 @Configuration(value = "nlpService")
-public class NlpServiceImplementation implements NlpService {
+public class NlpServiceImplementation  {
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
 
     // wysyłamy wiadomość do analizy
-    public  String nlpStringSender(String messageToBeAnalyze) throws IOException {
+    public static  String nlpStringSender(String messageToBeAnalyze) throws IOException {
         log.info("Method to analyzing text was called: '{}' " + messageToBeAnalyze);
         return ClientBuilder.newClient().target(NLPrestURL + "upload").request().post(Entity.entity(messageToBeAnalyze, MediaType.TEXT_PLAIN)).readEntity(String.class);
 
     }
 
 
-    public  List<Result> nlpGetOutput(String id) throws IOException {
+    public static List<Result> nlpGetOutput(String id) throws IOException {
         URL url = new URL(NLPrestURL + "download" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -51,14 +51,14 @@ public class NlpServiceImplementation implements NlpService {
     }
 
 
-    public  String getRes(Response res) throws IOException {
+    public static String getRes(Response res) throws IOException {
         if (res.getStatus() != 200)
             throw new IOException("Error in nlprest processing");
         return res.readEntity(String.class);
 
     }
 
-    public  String nlpProcess(String toolName, String id, JSONObject options) throws IOException, InterruptedException, JSONException {
+    public static String nlpProcess(String toolName, String id, JSONObject options) throws IOException, InterruptedException, JSONException {
         JSONObject request = new JSONObject();
         Client client = ClientBuilder.newClient();
         request.put("file", id);
@@ -83,7 +83,7 @@ public class NlpServiceImplementation implements NlpService {
 
     }
 
-    public  List<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
+    public static   List<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
         String id = nlpStringSender(message);
         JSONObject liner2 = new JSONObject();
         liner2.put("model", "top9");
@@ -92,7 +92,7 @@ public class NlpServiceImplementation implements NlpService {
 
     }
 
-    public  List<Result> inputStreamToResultList(InputStream is) {
+    public static List<Result> inputStreamToResultList(InputStream is) {
         List<Result> resultList = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
