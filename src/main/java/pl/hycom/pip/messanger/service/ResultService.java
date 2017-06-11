@@ -77,15 +77,20 @@ public class ResultService {
     public List<RKP> matchKeywords() {
         List<RKP> resultList = new ArrayList<>();
         Keyword tempKeyword = new Keyword();
-        for (Result res : resultRepository.findAll()) {
-            tempKeyword = keywordRepository.findByWordIgnoreCase(res.getResult());
-            if (tempKeyword != null) {
-                RKP tempRKP = new RKP(res, tempKeyword);
-                resultList.add(tempRKP);
-            } else {
-                resultList.add(new RKP(res, new Keyword("brak")));
+        try {
+            for (Result res : resultRepository.findAll()) {
+                tempKeyword = keywordRepository.findByWordIgnoreCase(res.getResult());
+                if (tempKeyword != null) {
+                    RKP tempRKP = new RKP(res, tempKeyword);
+                    resultList.add(tempRKP);
+                } else {
+                    resultList.add(new RKP(res, new Keyword("brak")));
+                }
             }
+        } catch (Exception ex) {
+            log.error("Error in matchKeywords method" + ex.getMessage(),ex);
         }
+
         return resultList;
 
     }
@@ -93,18 +98,23 @@ public class ResultService {
     public List<RKP> matchProducts() {
         List<RKP> resultKeywordProduct = new ArrayList<>();
         Product tempProduct = new Product();
-        for (RKP rkp : matchKeywords()) {
-            if ((rkp.getKeyword().getWord()) != "brak") {
-                tempProduct = productRepository.findProductsWithKeyword(rkp.getKeyword()).get(0);
-                rkp.setProduct(tempProduct);
-                resultKeywordProduct.add(rkp);
-            }
-            else {
-                resultKeywordProduct.add(rkp);
+        try {
+            for (RKP rkp : matchKeywords()) {
+                if ((rkp.getKeyword().getWord()) != "brak") {
+                    tempProduct = productRepository.findProductsWithKeyword(rkp.getKeyword()).get(0);
+                    rkp.setProduct(tempProduct);
+                    resultKeywordProduct.add(rkp);
+                } else {
+                    resultKeywordProduct.add(rkp);
+                }
+
             }
 
+        } catch (Exception ex) {
+            log.error("Error in method matchProducts" + ex.getMessage(), ex);
         }
         return resultKeywordProduct;
+
     }
 
 
