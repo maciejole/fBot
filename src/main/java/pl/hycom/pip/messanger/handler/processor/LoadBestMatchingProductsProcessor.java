@@ -55,7 +55,8 @@ public class LoadBestMatchingProductsProcessor implements PipelineProcessor {
         @SuppressWarnings("unchecked")
         List<Keyword> excludedKeywords = ctx.get(KEYWORDS_EXCLUDED, List.class);
 
-        List<Product> products = tryFindBestMatchingProducts(keywords, excludedKeywords);
+        List<Product> products = tryFindBestMatchingProducts(keywords,
+                CollectionUtils.isEmpty(excludedKeywords) ? Collections.emptyList() : excludedKeywords);
         ctx.put(PRODUCTS, products);
 
         List<Keyword> keywordsToBeSaved = getKeywordsThatWereInAnyProduct(products, keywords);
@@ -71,9 +72,6 @@ public class LoadBestMatchingProductsProcessor implements PipelineProcessor {
     List<Product> tryFindBestMatchingProducts(List<Keyword> keywordsList, List<Keyword> excludedKeywords) {
         if (CollectionUtils.isEmpty(keywordsList)) {
             return Collections.emptyList();
-        }
-        if (excludedKeywords == null) {
-            excludedKeywords = Collections.emptyList();
         }
         List<Keyword> commonKeywords = new ArrayList<>(keywordsList);
         commonKeywords.retainAll(excludedKeywords);

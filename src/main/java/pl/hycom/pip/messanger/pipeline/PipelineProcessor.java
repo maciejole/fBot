@@ -28,6 +28,8 @@ public interface PipelineProcessor {
     String KEYWORD_TO_BE_ASKED = "keywordToBeAsked";
     String KEYWORDS_EXCLUDED = "keywordsExcluded";
     String ANSWER = "answer";
+    String EVENT_TYPE = "eventType";
+    String PAYLOAD = "payload";
 
     int runProcess(@NonNull PipelineContext ctx) throws PipelineException;
 }
