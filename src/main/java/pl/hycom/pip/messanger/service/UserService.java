@@ -1,10 +1,7 @@
 package pl.hycom.pip.messanger.service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -214,7 +211,7 @@ public class UserService implements UserDetailsService {
     public void deleteExpiredTokens() {
         log.info("deleteExpiredTokens method from Scheduler invoked");
 
-        Long numberOfDeletedTokens = tokenRepository.deleteByExpiryDateLessThan(Date.from(Instant.now().minus(1, ChronoUnit.HOURS)));
+        Long numberOfDeletedTokens = tokenRepository.deleteByExpiryDateLessThan(LocalDateTime.now());
 
         log.info("Deleted[" + numberOfDeletedTokens + "] old tokens");
     }
