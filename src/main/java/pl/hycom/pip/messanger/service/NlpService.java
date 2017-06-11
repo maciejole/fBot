@@ -155,6 +155,7 @@ public class NlpService {
             id = nlpProcess("liner2", id, liner2);
             List<Result> resultList = new ArrayList<>();
             resultList.addAll(nlpGetOutput(id));
+            resultList = matchKeywords(resultList);
             for (Result res : resultList) {
                 resultService.addResult(res);
             }
