@@ -21,12 +21,14 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
-//    @GetMapping("/admin/nlp")
-//    public String showView() {
-//         return NLP_VIEW;
-//    }
+    @GetMapping("/admin/nlp")
+    public String showView(Model model) {
+//        log.info("Variable received from service " + nlpService.analyze());
+//        model.addAttribute("lista" , nlpService.analyze());
+         return NLP_VIEW;
+    }
 
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
     public String returnResult(Model model)  {
         log.info("Variable received from service " + nlpService.analyze());
         List<Result> temp = new ArrayList<>();
