@@ -1,3 +1,16 @@
 messenger:
   pageAccessToken: EAASEpnxfYrwBAK7MZAPvt0awlzY8Ph8yDTHVe41QnBJDflZAgBQxD5U6T2Y6AG3z8nKTswiF5qPIevrZA8ftjoHRHQZABCCzcgWxwrOUBAU5ZBoQZA4IuHo1prqzZCgGZBIF1N07gdORcU9cVbLcScLUNAYccwTl67Dk40UMZClI6QQZDZD
   appSecret: bb7346ab50a47c439fc384eae66cadc0
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    username: messenger.recommendations2017@gmail.com
+    password: Admin_2017
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+      starttls.required: true
+      ssl.trust: smtp.gmail.com
