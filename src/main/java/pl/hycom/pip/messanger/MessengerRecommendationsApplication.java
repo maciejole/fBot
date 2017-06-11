@@ -18,12 +18,19 @@ package pl.hycom.pip.messanger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.system.ApplicationPidFileWriter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class MessengerRecommendationsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MessengerRecommendationsApplication.class, args);
+		final SpringApplication application = new SpringApplicationBuilder(MessengerRecommendationsApplication.class).application();
+		application.setAdditionalProfiles(System.getProperty("user.name"));
+		application.addListeners(new ApplicationPidFileWriter());
+		application.run(args);
 	}
 
 }

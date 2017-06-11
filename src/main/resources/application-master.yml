@@ -2,10 +2,17 @@ messenger:
   pageAccessToken: ${MESSENGER_PAGE_ACCESS_TOKEN}
   appSecret: ${MESSENGER_APP_SECRET}
   verifyToken: ${MESSENGER_VERIFY_TOKEN}
+  host: mr-master.herokuapp.com
+  port: 80
+  protocol : http
   recommendation:
     products-amount: 3
   pipeline:
     filepath: /pipeline.xml
+
+auth:
+  login: admin@hycom.pl
+  password: admin1
 
 management:
   port: 8081
@@ -21,3 +28,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  mail:
+      host: ${MAIL_HOST}
+      port: ${MAIL_PORT}
+      username: ${MAIL_USERNAME}
+      password: ${MAIL_PASSWORD}
+      properties.mail.smtp.starttls.enable: true

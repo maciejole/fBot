@@ -22,8 +22,12 @@
 	<pipelinechain name="processMessage" headlink="loadUserProfile">
 		<pipelinelink name="loadUserProfile">
 			<processor bean="userProfileProcessor" />
-            <transition returnvalue="1" link="extractKeywords"/>
+            <transition returnvalue="1" link="processQuickReply"/>
         </pipelinelink>
+		<pipelinelink name="processQuickReply">
+			<processor bean="processQuickReplyProcessor"/>
+			<transition returnvalue="1" link="extractKeywords" />
+		</pipelinelink>
         <pipelinelink name="extractKeywords">
             <processor bean="extractKeywordsFromMessageProcessor"/>
             <transition returnvalue="1" link="loadProducts"/>
@@ -31,6 +35,16 @@
 		<pipelinelink name="loadProducts">
             <processor bean="loadBestMatchingProductsProcessor"/>
 			<transition returnvalue="1" link="sendProductsResponse" />
+			<transition returnvalue="2" link="findKeywordToAsk"/>
+		</pipelinelink>
+		<pipelinelink name="findKeywordToAsk">
+			<processor bean="findKeywordToAskProcessor"/>
+			<transition returnvalue="1" link="sendKeywordQuestion"/>
+			<transition returnvalue="2" link="sendProductsResponse"/>
+		</pipelinelink>
+		<pipelinelink name="sendKeywordQuestion">
+			<processor bean="sendKeywordQuestionProcessor"/>
+			<transition returnvalue="1" link="logContext"/>
 		</pipelinelink>
 		<pipelinelink name="sendProductsResponse">
 			<processor bean="generateMessageProcessor" />

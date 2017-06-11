@@ -20,7 +20,7 @@
 </head>
 <body>
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" th:fragment="nav" sec:authorize="hasRole('ROLE_ADMIN')">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" th:fragment="nav" sec:authorize="isAuthenticated()">
             <div class="navbar-header">
                 <a class="navbar-brand" th:href="@{/admin}">Messenger Recomendations Admin</a>
             </div>
@@ -40,6 +40,13 @@
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <form th:action="@{/user/account}" method="GET">
+                                <button class="btn-link" type="submit">
+                                    <i class="fa fa-cog fa-fw"></i> Twoje konto
+                                </button>
+                            </form>
+                        </li>
                         <li>
                         	<form th:action="@{/logout}" method="POST">
 							    <button class="btn-link" type="submit">

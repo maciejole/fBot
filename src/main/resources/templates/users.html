@@ -40,12 +40,12 @@
 
     <div class="alert alert-success fade in" th:if="${(param.success != null) and (param.success[0] == 'true') }">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <span>Udało się usunąć słowo kluczowe</span>
+        <span>Udało się usunąć użytkownika</span>
     </div>
 
     <div class="alert alert-danger fade in" th:if="${(param.success != null) and (param.success[0] == 'false') }">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <span>Nie udało się usunąć słowa kluczowego</span>
+        <span>Nie udało się usunąć użytkownika</span>
     </div>
 
     <div class="row">
@@ -62,11 +62,12 @@
                 </thead>
                 <tbody>
                 <tr th:id="'user-' + ${user.id}" th:each="user : ${users}">
-                    <td class="align-middle" th:text="${user.id}">ID</td>
-                    <td class="align-middle" th:text="${user.email}">Email</td>
-                    <td class="align-middle" th:text="${user.firstName}">Firstname</td>
-                    <td class="align-middle" th:text="${user.lastName}">Lastname</td>
-                    <td class="align-middle" th:text="${user.phoneNumber}">Numer telefonu</td>
+                    <td th:id="'usr-' + ${user.id}+'-id'" class="align-middle" th:text="${user.id}">ID</td>
+                    <td th:id="'usr-' + ${user.id}+'-email'" class="align-middle" th:text="${user.email}">Email</td>
+                    <td th:id="'usr-' + ${user.id}+'-name'" class="align-middle" th:text="${user.firstName}">Firstname</td>
+                    <td th:id="'usr-' + ${user.id}+'-surname'" class="align-middle" th:text="${user.lastName}">Lastname</td>
+                    <td th:id="'usr-' + ${user.id}+'-phone'" class="align-middle" th:text="${user.phoneNumber}">Numer telefonu</td>
+                    <td class="hidden roles" style="display:none; visibility:hidden;" th:each="role : ${user.roles}" th:text="${role.id}" th:id="'usr-' + ${user.id} + '-role-' + ${role.id}"></td>
                     <td class="align-middle">
                         <div data-placement="top" data-toggle="tooltip" title="Edytuj">
                             <button class="btn btn-primary btn-xs button-edit center-block"
@@ -116,7 +117,7 @@
                                     <label class="col-sm-3 control-label" for="email_form">Email</label>
                                     <div class="col-sm-9">
                                         <input id="email_form" class="form-control autofocus" maxlength="40"
-                                               th:field="*{email}"/>
+                                               th:field="*{email}" placeholder="email@example.com"/>
                                     </div>
                                     <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</p>
                                 </div>
@@ -125,7 +126,7 @@
                                     <label class="col-sm-3 control-label" for="firstname_form">Imię</label>
                                     <div class="col-sm-9">
                                         <input class="form-control" id="firstname_form" maxlength="40"
-                                                  th:field="*{firstName}"/>
+                                               th:field="*{firstName}"/>
                                     </div>
                                     <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">Firstname
                                         Error</p>
@@ -141,14 +142,32 @@
                                         Error</p>
                                 </div>
                                 <div class="form-group"
-                                     th:classappend="${#fields.hasErrors('phoneNumber')}? 'has-error'">
+                                     >
                                     <label class="col-sm-3 control-label" for="phoneNumber_form">Numer telefonu</label>
                                     <div class="col-sm-9">
                                         <input class="form-control" id="phoneNumber_form"
-                                               th:field="*{phoneNumber}"/>
+                                               th:field="*{phoneNumber}" placeholder="+48777888999"/>
                                     </div>
-                                    <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Phone number
+                                    <p th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Phone
+                                        number
                                         Error</p>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" for="roles_form">Role</label>
+                                    <div class="col-sm-9">
+                                        <table>
+                                            <tr th:each="var : ${model}">
+                                                <td th:text="${var.key}"></td>
+                                                <td th:text="${var.value}"></td>
+                                            </tr>
+                                        </table>
+                                        <ul id="roles_form">
+                                            <li th:each="role : ${authorities}">
+                                                <input type="checkbox" name="role" th:field="*{roles}" th:value="${role.id}" class="roles_form"/>
+                                                <label th:text="${role.authority}" ></label>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer ">

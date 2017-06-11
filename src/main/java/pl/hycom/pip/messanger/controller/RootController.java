@@ -16,12 +16,12 @@
 
 package pl.hycom.pip.messanger.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import lombok.extern.log4j.Log4j2;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by maciek on 06.03.17.
@@ -38,12 +38,12 @@ public class RootController {
 
     @RequestMapping("/login")
     public String login(HttpServletRequest request) {
+        return "login";
+    }
 
-        if (request.isUserInRole("ROLE_ADMIN")) {
-            log.info("Redirecting to home");
-            return home();
-        }
-
+    @RequestMapping("/login-error")
+    public String loginError(Model model) {
+        model.addAttribute("error", true);
         return "login";
     }
 

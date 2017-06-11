@@ -1,41 +1,47 @@
 /*
- *   Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package pl.hycom.pip.messanger.service;
 
-import ma.glasnost.orika.MapperFacade;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import ma.glasnost.orika.MapperFacade;
 import pl.hycom.pip.messanger.controller.model.KeywordDTO;
 import pl.hycom.pip.messanger.controller.model.ProductDTO;
-import pl.hycom.pip.messanger.repository.model.Keyword;
-import pl.hycom.pip.messanger.repository.model.Product;
 import pl.hycom.pip.messanger.repository.KeywordRepository;
 import pl.hycom.pip.messanger.repository.ProductRepository;
-
-import javax.inject.Inject;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
@@ -63,18 +69,18 @@ public class ProductService {
     public List<ProductDTO> findAllProducts() {
         log.info("Searching all products");
         return orikaMapper.mapAsList(StreamSupport.stream(productRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList()),ProductDTO.class);
+                .collect(Collectors.toList()), ProductDTO.class);
 
     }
 
-    public List<String> findProductKeywords(Integer id){
+    public List<String> findProductKeywords(Integer id) {
         log.info("Searching keywords for product with id[" + id + "]");
         return productRepository.findOne(id).getKeywords().stream().map(Keyword::getWord).collect(Collectors.toList());
     }
 
     public boolean deleteProduct(Integer id) {
         log.info("Deleting product[" + id + "]");
-        if(!productRepository.exists(id)){
+        if (!productRepository.exists(id)) {
             return Boolean.FALSE;
         }
         productRepository.delete(id);
@@ -93,7 +99,7 @@ public class ProductService {
     }
 
     public ProductDTO addOrUpdateProduct(ProductDTO product) {
-        String[] keywordsStr = StringUtils.split(product.getKeywordsHolder(),',');
+        String[] keywordsStr = StringUtils.split(product.getKeywordsHolder(), ',');
         final Set<Keyword> keywords = new HashSet<>();
         if (keywordsStr != null) {
             Arrays.stream(keywordsStr)
@@ -107,10 +113,10 @@ public class ProductService {
                         keywords.add(keyword);
                     });
         }
-        Product entityProduct=orikaMapper.map(product,Product.class);
+        Product entityProduct = orikaMapper.map(product, Product.class);
         entityProduct.setKeywords(keywords);
 
-        return orikaMapper.map(addOrUpdateProduct(entityProduct),ProductDTO.class);
+        return orikaMapper.map(addOrUpdateProduct(entityProduct), ProductDTO.class);
     }
 
     public Product addOrUpdateProduct(Product product) {
@@ -153,8 +159,8 @@ public class ProductService {
                 .distinct().collect(Collectors.toList());
     }
 
-    public boolean isAnyProductContainingAtLeastOneKeyword(List<KeywordDTO> keywords){
-        List<Keyword> keywordsList=orikaMapper.mapAsList(keywords,Keyword.class);
+    public boolean isAnyProductContainingAtLeastOneKeyword(List<KeywordDTO> keywords) {
+        List<Keyword> keywordsList = orikaMapper.mapAsList(keywords, Keyword.class);
         return !findAllProductsContainingAtLeastOneKeyword(keywordsList).isEmpty();
     }
 

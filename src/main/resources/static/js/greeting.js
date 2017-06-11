@@ -24,13 +24,14 @@ jQuery(function ($) {
         lastSelected = $(this);
     })
 
-    $("#confirm-delete-modal").on('shown.bs.modal', function(event){
+    $("#confirm-delete-modal").on('shown.bs.modal', function (event) {
 
         var greetingLocale = $(event.relatedTarget).data('greeting-locale');
-        $(this).find('.button-delete').data("greeting-locale" ,greetingLocale)
+        $(this).find('.button-delete').data("greeting-locale", greetingLocale)
     });
 
-    $("#confirm-delete-modal").find('.button-delete').on("click", function (e) {removeGreeting($(e.currentTarget).data("greeting-locale"))
+    $("#confirm-delete-modal").find('.button-delete').on("click", function (e) {
+        removeGreeting($(e.currentTarget).data("greeting-locale"))
 
     })
 });

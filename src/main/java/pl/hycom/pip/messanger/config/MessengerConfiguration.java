@@ -53,14 +53,20 @@ public class MessengerConfiguration {
     }
 
     @Bean
-    public PipelineMessageHandler pipelineMessageHandler() {
-        return new PipelineMessageHandler(pipelineManager());
+    public PipelineMessageHandler.PipelineTextMessageEventHandler pipelineMessageHandler() {
+        return new PipelineMessageHandler.PipelineTextMessageEventHandler(pipelineManager());
+    }
+
+    @Bean
+    public PipelineMessageHandler.PipelineQuickReplyMessageEventHandler pipelineQuickReplyHandler() {
+        return new PipelineMessageHandler.PipelineQuickReplyMessageEventHandler(pipelineManager());
     }
 
     @Bean
     public MessengerReceiveClient receiveClient() {
         return MessengerPlatformWrapper.newReceiveClientBuilder(appSecret, verifyToken)
                 .onTextMessageEvent(pipelineMessageHandler())
+                .onQuickReplyMessageEvent(pipelineQuickReplyHandler())
                 .build();
     }
 
