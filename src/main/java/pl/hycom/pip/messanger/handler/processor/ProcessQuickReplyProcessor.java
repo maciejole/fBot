@@ -34,7 +34,7 @@ public class ProcessQuickReplyProcessor implements PipelineProcessor{
         List<Keyword> excludedKeywords = ctx.get(KEYWORDS_EXCLUDED, List.class);
         Keyword keywordAsked = ctx.get(KEYWORD_TO_BE_ASKED, Keyword.class);
 
-        String debugMsg = "keywords: " + keywords.toString() + "\nexcludedKeywords: " + excludedKeywords.toString()
+        String debugMsg = "keywords: " + keywords + "\nexcludedKeywords: " + excludedKeywords
                 + "\nkeywordAsked: " + keywordAsked;
         log.debug(debugMsg);
 
