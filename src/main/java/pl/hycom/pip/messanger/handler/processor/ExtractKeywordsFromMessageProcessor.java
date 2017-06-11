@@ -20,15 +20,11 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import pl.hycom.pip.messanger.controller.NLPController;
-import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
+import pl.hycom.pip.messanger.service.NlpService;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.messanger.nlp.NlpService;
-import pl.hycom.pip.messanger.pipeline.model.Pipeline;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -43,6 +39,8 @@ import java.util.stream.Collectors;
 public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
+    @Autowired
+    NlpService nlpService;
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
@@ -66,6 +64,12 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         }
 
         String out = message;
+
+        try {
+            nlpService.analyze(message);
+        } catch (Exception ex) {
+            log.error("Error in analyze method called in " + this.getClass() , ex.getMessage(),ex);
+        }
         out = StringUtils.replaceAll(out, CHARS_TO_REMOVE_REGEX, StringUtils.EMPTY);
         out = StringUtils.lowerCase(out);
 

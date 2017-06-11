@@ -1,20 +1,23 @@
-package pl.hycom.pip.messanger.nlp;
+package pl.hycom.pip.messanger.service;
 
 
-import com.github.messenger4j.receive.events.TextMessageEvent;
 import lombok.extern.log4j.Log4j2;
+import ma.glasnost.orika.MapperFacade;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
 ;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import pl.hycom.pip.messanger.handler.PipelineMessageHandler;
+import pl.hycom.pip.messanger.controller.model.ResultDTO;
+import pl.hycom.pip.messanger.repository.ResultRepository;
+import pl.hycom.pip.messanger.repository.model.Result;
 import pl.hycom.pip.messanger.service.KeywordService;
 
 import javax.ws.rs.client.Client;
@@ -31,15 +34,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Log4j2
 @Service
 @Configuration(value = "nlpService")
-public class NlpServiceImplementation implements NlpService {
+public class NlpService {
 
 
-    private TextMessageEvent textMessageEvent;
     private KeywordService keywordService;
+    private ResultRepository resultRepository;
+
+    @Autowired
+    ResultService resultService;
+
+    @Autowired
+    private MapperFacade orikaMapper;
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
 
@@ -51,8 +62,8 @@ public class NlpServiceImplementation implements NlpService {
     }
 
     public List<Result> inputStreamToResultList(InputStream is) {
-        List<Result> resultList = new ArrayList<Result>();
-         try {
+        List<ResultDTO> resultList = new ArrayList<ResultDTO>();
+        try {
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -64,21 +75,19 @@ public class NlpServiceImplementation implements NlpService {
                 }
             });
             Document doc = builder.parse(is);
-            NodeList orthList = doc.getElementsByTagName("orth");
-            NodeList baseList = doc.getElementsByTagName("base");
-            for (int i = 0; i < Integer.min(baseList.getLength(), orthList.getLength());  i++) {
-
-                resultList.add(new Result(baseList.item(i).getTextContent(),orthList.item(i).getTextContent()));
+            NodeList baselist = doc.getElementsByTagName("orth");
+            NodeList results = doc.getElementsByTagName("base");
+            for ( int i=0 ; i< baselist.getLength() ; i++   ) {
+                resultList.add(new ResultDTO(baselist.item(i).getTextContent(),results.item(i).getTextContent()));
             }
-
 
         } catch (Exception ex) {
             log.error("Exception, with message: '" + ex.getMessage() + "' occured while deserializing response to Result object. Deserialized result is: " + resultList, ex);
         }
-        return resultList;
+        return orikaMapper.mapAsList(StreamSupport.stream(resultList.spliterator(), false).collect(Collectors.toList()), Result.class);
     }
 
-    @Override
+
     public List<Result> matchKeywords(List<Result> list) {
         log.info("Method for matching keywords was called");
         for (Result result : list) {
@@ -134,33 +143,29 @@ public class NlpServiceImplementation implements NlpService {
         }
 
         return jsonres.getJSONArray("value").getJSONObject(0).getString("fileID");
-
-
     }
 
-    public String returnMessage() {
-        log.info("returnMessage method wa called" + textMessageEvent.getText());
-        return textMessageEvent.getText();
-
-    }
 
     @Nullable
-    public List<Result> analyze() {
+    public void analyze(String message) {
         try {
-            String id = nlpStringSender(returnMessage());
+            String id = nlpStringSender(message);
             JSONObject liner2 = new JSONObject();
             liner2.put("model", "top9");
             id = nlpProcess("liner2", id, liner2);
-            return nlpGetOutput(id);
+            List<Result> resultList = new ArrayList<>();
+            resultList.addAll(nlpGetOutput(id));
+            for (Result res : resultList) {
+                resultService.addResult(res);
+            }
         } catch (IOException | JSONException ex) {
             log.error("Exception in analyze method caused by " + ex.getMessage(), ex);
-            return null;
+
         } catch (InterruptedException e) {
             log.error("Exception in analyze method caused by " + e.getMessage(), e);
-            return null;
+
         }
     }
-
 
 
 

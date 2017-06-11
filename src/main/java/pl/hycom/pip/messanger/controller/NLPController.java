@@ -2,14 +2,14 @@ package pl.hycom.pip.messanger.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
-import pl.hycom.pip.messanger.nlp.Result;
+import pl.hycom.pip.messanger.service.NlpService;
+import pl.hycom.pip.messanger.service.ResultService;
+
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Log4j2
@@ -17,28 +17,17 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class NLPController {
 
-    private final NlpServiceImplementation nlpService;
+    @Autowired
+    ResultService resultService;
     private static final String NLP_VIEW = "nlp";
 
     @GetMapping("/admin/nlp")
     public String showView(Model model) {
-        log.info("Variable received from service in showView " + nlpService.analyze());
-        model.addAttribute("lista" , nlpService.analyze());
-         return NLP_VIEW;
-    }
-
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
-    public String returnResult(Model model)  {
-        log.info("Variable received from service " + nlpService.analyze());
-        List<Result> temp = new ArrayList<>();
-        temp.addAll(nlpService.analyze());
-//        if (!outputList.isEmpty()) {
-//            temp .addAll(nlpService.matchKeywords(outputList));
-//        }
-        model.addAttribute("lista" , temp);
+        model.addAttribute("lista" , resultService.findAllResults());
         return NLP_VIEW;
-
     }
+
+
 
 
 }
