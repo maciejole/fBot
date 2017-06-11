@@ -1,8 +1,10 @@
 package pl.hycom.pip.messanger.handler.processor;
 
+import com.google.gson.Gson;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import pl.hycom.pip.messanger.handler.model.EventType;
+import pl.hycom.pip.messanger.handler.model.Payload;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
@@ -30,9 +32,11 @@ public class ProcessQuickReplyProcessor implements PipelineProcessor{
         log.info("Started process of ProcessQuickReplyProcessor");
 
         String answer = ctx.get(ANSWER, String.class);
-        List<Keyword> keywords = ctx.get(KEYWORDS, List.class);
-        List<Keyword> excludedKeywords = ctx.get(KEYWORDS_EXCLUDED, List.class);
-        Keyword keywordAsked = ctx.get(KEYWORD_TO_BE_ASKED, Keyword.class);
+        String payloadString = ctx.get(PAYLOAD, String.class);
+        Payload payload = getPayloadFromString(payloadString);
+        List<Keyword> keywords = payload.getKeywords();
+        List<Keyword> excludedKeywords = payload.getExcludedKeywords();
+        Keyword keywordAsked = payload.getKeywordToBeAsked();
 
         String debugMsg = "keywords: " + keywords + "\nexcludedKeywords: " + excludedKeywords
                 + "\nkeywordAsked: " + keywordAsked;
@@ -47,5 +51,10 @@ public class ProcessQuickReplyProcessor implements PipelineProcessor{
         }
 
         return 1;
+    }
+
+    private Payload getPayloadFromString(String payloadString) {
+        Gson gson = new Gson();
+        return gson.fromJson(payloadString, Payload.class);
     }
 }
