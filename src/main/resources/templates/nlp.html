@@ -28,13 +28,13 @@
         </tr>
         <tr th:id="lista" th:each="map: ${lista}">
 
-            <td class="align-middle" th:text="${map.Key.base}">Base </td>
+            <td class="align-middle" th:text="${map.Key.base}" >Base </td>
             <td class="align-middle" th:text="${map.Key.result}">Result </td>
             <td class="align-middle" th:text="${map.Value.word}">Keyword </td>
         </tr>
     </table>
     <div class="row">
-        <button class="btn btn-primary pull-right" type="reset">Refresh</button>
+        <button class="btn btn-primary pull-right" type="reset" onclick="window.location = '/admin/nlp'">Refresh</button>
     </div>
 
 
