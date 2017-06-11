@@ -138,6 +138,13 @@ public class NlpServiceImplementation implements NlpService {
 
 
     }
+
+    public String returnMessage() {
+        log.info("returnMessage method wa called" + pipelineMessageHandler.getMessage(textMessageEvent));
+        return pipelineMessageHandler.getMessage(textMessageEvent);
+
+    }
+    
     @Nullable
     public List<Result> analyze() {
         try {
@@ -157,10 +164,6 @@ public class NlpServiceImplementation implements NlpService {
 
 
 
-
-    public String returnMessage() {
-        return pipelineMessageHandler.getMessage(textMessageEvent);
-    }
 
 
 }
