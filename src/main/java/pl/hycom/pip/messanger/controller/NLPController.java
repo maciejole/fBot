@@ -31,15 +31,16 @@ public class NLPController {
 
 
     private static final String NLP_VIEW = "nlp";
-
-    @GetMapping("/admin/nlp")
-    public String showView(Model model) {
-        return NLP_VIEW;
-    }
+//
+//    @GetMapping("/admin/nlp")
+//    public String showView(Model model) {
+//        return NLP_VIEW;
+//    }
 
 
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
     public String returnResult(List<Result> outputList) {
+        log.info("Variable received from Extract class" + outputList.size());
         List<Result> temp = outputList;
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
