@@ -12,42 +12,47 @@
             Wynik analizy przesłanego tekstu
         </h1>
     </div>
+    <div class="row">
+        <div class="table-responsive">
+            <table class="table table-striped table-condensed">
+                <tr th:class="table-row-cell">
+                    <td th:class="content">
+                        Słowo bazowe
+                    </td>
+                    <td th:class="content">
+                        Po analizie
+                    </td>
+                    <td th:class="content">
+                        Keyword
+                    </td>
+                    <td th:class="content">
+                        Nazwa produktu
+                    </td>
+                    <td th:class="content">
+                        Opis
+                    </td>
+                    <td th:class="content">
+                        Zdjęcie
+                    </td>
 
-    <table class="table table-striped table-condensed"   border="3" th:width="500">
-        <tr th:class="table-row-cell">
-            <td th:class="content">
-                Słowo bazowe
-            </td>
-            <td th:class="content">
-                Po analizie
-            </td>
-            <td th:class="content">
-                Keyword
-            </td>
-            <td th:class="content">
-                Nazwa produktu
-            </td>
-            <td th:class="content">
-                Opis
-            </td>
-            <td th:class="content">
-                Zdjęcie
-            </td>
 
+                </tr>
+                <tr th:id="lista" th:each="list: ${lista}">
 
-        </tr>
-        <tr th:id="lista" th:each="list: ${lista}">
+                    <td class="align-middle" th:text="${list.Result.base}" >base </td>
+                    <td class="align-middle" th:text="${list.Result.result}">result </td>
+                    <td class="align-middle" th:text="${list.Keyword.word}">keyword </td>
+                    <td class="align-middle" th:text="${list.Product.name}">productName </td>
+                    <td class="align-middle" th:text="${list.Product.description}">productDescription </td>
+                    <td class="align-middle" >
+                        <a th:href="${list.Product.imageUrl}" target="_blank"><img th:src="${list.Product.imageUrl}" width="auto" height="70px"/></a>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
-            <td class="align-middle" th:text="${list.Result.base}" >base </td>
-            <td class="align-middle" th:text="${list.Result.result}">result </td>
-            <td class="align-middle" th:text="${list.Keyword.word}">keyword </td>
-            <td class="align-middle" th:text="${list.Product.name}">productName </td>
-            <td class="align-middle" th:text="${list.Product.description}">productDescription </td>
-            <td class="align-middle" >
-                <a th:href="${list.Product.imageUrl}" target="_blank"><img th:src="${list.Product.imageUrl}" width="auto" height="70px"/></a>
-            </td>
-        </tr>
-    </table>
+    </div>
+
     <div class="row">
         <button class="btn btn-primary pull-right" type="reset" onclick="window.location = '/admin/nlp'">Refresh</button>
     </div>
