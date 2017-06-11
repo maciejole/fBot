@@ -29,13 +29,14 @@ import java.util.List;
 public class NLPController {
 
     private final NlpService nlpService;
-
+    private Model model;
 
     private static final String NLP_VIEW = "nlp";
-    private Model model;
 
     @GetMapping("/admin/nlp")
     public String showView(Model model) {
+        this.model = model;
+
         return NLP_VIEW;
     }
 
