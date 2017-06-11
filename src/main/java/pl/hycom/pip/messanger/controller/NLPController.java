@@ -40,7 +40,7 @@ public class NLPController {
 
     @ResponseBody
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
-    public String returnResult(@RequestBody List<Result> outputList) {
+    public String returnResult(@RequestBody @ModelAttribute List<Result> outputList) {
         log.info("Variable received from Extract class " + outputList.size());
         List<Result> temp = new ArrayList<>();
         temp.addAll(outputList);
@@ -50,7 +50,7 @@ public class NLPController {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName(NLP_VIEW);
-        mav.addObject("lista" , temp);
+        mav.addObject("lista" , outputList);
         return NLP_VIEW;
 
     }

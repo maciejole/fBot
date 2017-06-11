@@ -1,5 +1,7 @@
 package pl.hycom.pip.messanger.nlp;
 
+import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+import com.sun.xml.internal.ws.util.xml.XmlUtil;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,6 +9,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -47,24 +50,23 @@ public class NlpServiceImplementation implements NlpService {
 
     public List<Result> inputStreamToResultList(InputStream is) {
         List<Result> resultList = new ArrayList<Result>();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         try {
 
-
-        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(new EntityResolver() {
                 @Override
                 public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-                    return systemId.contains("ccl.dtd") ? new InputSource(new StringReader("")) : null;
+                    return (systemId.contains("ccl.dtd") ? new InputSource(new StringReader("")) : null);
                 }
             });
             Document doc = builder.parse(is);
             NodeList orthList = doc.getElementsByTagName("orth");
             NodeList baseList = doc.getElementsByTagName("base");
-            for (int i = 0; i < baseList.getLength(); i++) {
+            for (int i = 0; i < Integer.min(baseList.getLength(), orthList.getLength());  i++) {
 
-                resultList.add(new Result(orthList.item(i).getTextContent(), baseList.item(i).getTextContent()));
+                resultList.add(new Result());
             }
 
 
