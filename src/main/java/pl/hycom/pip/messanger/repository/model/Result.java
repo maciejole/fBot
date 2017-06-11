@@ -27,8 +27,6 @@ public class Result implements Serializable {
     @Column
     private  String result;
 
-    @Column
-    private String keyword;
 
 
 }

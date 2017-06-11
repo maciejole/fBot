@@ -46,7 +46,12 @@ public class ResultService {
     @Autowired
     private MapperFacade orikaMapper;
 
+    @Autowired
     private final ResultRepository resultRepository;
+
+    @Autowired
+    private final KeywordRepository keywordRepository;
+
 
 
     public List<ResultDTO> findAllResults() {
@@ -64,6 +69,22 @@ public class ResultService {
     public void removeAll() {
         log.info("Deleting all results from database");
         resultRepository.deleteAll();
+    }
+
+    public HashMap<Result, Keyword> matchKeywords() {
+        HashMap<Result, Keyword> resultMap = new HashMap<>();
+        Keyword temp = new Keyword();
+        for (Result res: resultRepository.findAll()) {
+            temp = keywordRepository.findByWordIgnoreCase(res.getResult());
+            if (temp != null) {
+                resultMap.put(res,temp);
+            }
+            else {
+                resultMap.put(res,new Keyword("brak"));
+            }
+        }
+        return resultMap;
+
     }
 
 

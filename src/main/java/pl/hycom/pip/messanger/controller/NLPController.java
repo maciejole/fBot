@@ -23,7 +23,7 @@ public class NLPController {
 
     @GetMapping("/admin/nlp")
     public String showView(Model model) {
-        model.addAttribute("lista" , resultService.findAllResults());
+        model.addAttribute("lista" , resultService.matchKeywords());
         return NLP_VIEW;
     }
 

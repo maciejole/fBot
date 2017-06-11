@@ -88,18 +88,6 @@ public class NlpService {
     }
 
 
-    public List<Result> matchKeywords(List<Result> list) {
-        log.info("Method for matching keywords was called");
-        for (Result result : list) {
-            if (((keywordService.findKeywordByWord(result.getResult())) != null)) {
-                result.setKeyword(keywordService.findKeywordByWord(result.getResult()).getWord());
-            } else {
-                result.setKeyword("brak keyworda");
-            }
-
-        }
-        return list;
-    }
 
     public List<Result> nlpGetOutput(String id) throws IOException {
         URL url = new URL(NLPrestURL + "download" + id);
@@ -155,9 +143,7 @@ public class NlpService {
             id = nlpProcess("liner2", id, liner2);
             List<Result> resultList = new ArrayList<>();
             resultList.addAll(nlpGetOutput(id));
-            List<Result> outputList = new ArrayList<>();
-            outputList.addAll(matchKeywords(resultList));
-            for (Result res : outputList) {
+            for (Result res : resultList) {
                 resultService.addResult(res);
             }
         } catch (IOException | JSONException ex) {

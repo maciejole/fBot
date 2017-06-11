@@ -15,7 +15,7 @@ public class ResultDTO {
     private Integer id;
     private String base;
     private String result;
-    private String keyword;
+
 
     public ResultDTO(String base, String result) {
         this.base = base;

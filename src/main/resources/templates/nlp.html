@@ -26,11 +26,11 @@
             </td>
 
         </tr>
-        <tr th:id="lista" th:each="result: ${lista}">
+        <tr th:id="lista" th:each="map: ${lista}">
 
-            <td class="align-middle" th:text="${result.base}">Base </td>
-            <td class="align-middle" th:text="${result.result}">Result </td>
-            <td class="align-middle" th:text="${result.keyword}">Keyword </td>
+            <td class="align-middle" th:text="${map.Result.base}">Base </td>
+            <td class="align-middle" th:text="${map.Result.result}">Result </td>
+            <td class="align-middle" th:text="${map.Keyword.word}">Keyword </td>
         </tr>
     </table>
     <div class="row">
