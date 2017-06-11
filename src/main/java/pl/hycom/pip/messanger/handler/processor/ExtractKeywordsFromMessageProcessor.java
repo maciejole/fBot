@@ -16,25 +16,21 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
+import pl.hycom.pip.messanger.handler.model.EventType;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.service.KeywordService;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by szale_000 on 2017-04-06.
@@ -50,6 +46,11 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
+        EventType eventType = ctx.get(EVENT_TYPE, EventType.class);
+        if (eventType != EventType.MESSAGE) {
+            return 1;
+        }
+
         log.info("Started keyword generating");
 
         String message = ctx.get(MESSAGE, String.class);

@@ -22,8 +22,12 @@
 	<pipelinechain name="processMessage" headlink="loadUserProfile">
 		<pipelinelink name="loadUserProfile">
 			<processor bean="userProfileProcessor" />
-            <transition returnvalue="1" link="extractKeywords"/>
+            <transition returnvalue="1" link="processQuickReply"/>
         </pipelinelink>
+		<pipelinelink name="processQuickReply">
+			<processor bean="processQuickReplyProcessor"/>
+			<transition returnvalue="1" link="extractKeywords" />
+		</pipelinelink>
         <pipelinelink name="extractKeywords">
             <processor bean="extractKeywordsFromMessageProcessor"/>
             <transition returnvalue="1" link="loadProducts"/>

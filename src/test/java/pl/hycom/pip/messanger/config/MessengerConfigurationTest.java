@@ -57,8 +57,8 @@ public class MessengerConfigurationTest {
 
     @Bean
     @Primary
-    public PipelineMessageHandler pipelineMessageHandler() {
-        return new PipelineMessageHandler(pipelineManager());
+    public PipelineMessageHandler.PipelineTextMessageEventHandler pipelineMessageHandler() {
+        return new PipelineMessageHandler.PipelineTextMessageEventHandler(pipelineManager());
     }
 
     @Bean
