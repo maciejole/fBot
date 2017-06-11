@@ -44,11 +44,11 @@ public class ProcessQuickReplyProcessor implements PipelineProcessor{
 
         if (YES_ANSWER.equals(answer)) {
             keywords.add(keywordAsked);
-            ctx.put(KEYWORDS, keywords);
         } else {
             excludedKeywords.add(keywordAsked);
-            ctx.put(KEYWORDS_EXCLUDED, excludedKeywords);
         }
+        ctx.put(KEYWORDS, keywords);
+        ctx.put(KEYWORDS_EXCLUDED, excludedKeywords);
 
         return 1;
     }
