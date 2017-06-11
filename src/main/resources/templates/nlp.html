@@ -28,9 +28,9 @@
         </tr>
         <tr th:id="lista" th:each="map: ${lista}">
 
-            <td class="align-middle" th:text="${map.Result.base}">Base </td>
-            <td class="align-middle" th:text="${map.Result.result}">Result </td>
-            <td class="align-middle" th:text="${map.Keyword.word}">Keyword </td>
+            <td class="align-middle" th:text="${map.Key.base}">Base </td>
+            <td class="align-middle" th:text="${map.Key.result}">Result </td>
+            <td class="align-middle" th:text="${map.Value.word}">Keyword </td>
         </tr>
     </table>
     <div class="row">
