@@ -31,6 +31,7 @@ import pl.hycom.pip.messanger.repository.ProductRepository;
 import pl.hycom.pip.messanger.repository.ResultRepository;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.repository.model.Product;
+import pl.hycom.pip.messanger.repository.model.RKP;
 import pl.hycom.pip.messanger.repository.model.Result;
 
 import javax.inject.Inject;
@@ -52,6 +53,8 @@ public class ResultService {
     @Autowired
     private final KeywordRepository keywordRepository;
 
+    @Autowired
+    private final ProductRepository productRepository;
 
 
     public List<ResultDTO> findAllResults() {
@@ -71,20 +74,37 @@ public class ResultService {
         resultRepository.deleteAll();
     }
 
-    public HashMap<Result, Keyword> matchKeywords() {
-        HashMap<Result, Keyword> resultMap = new HashMap<>();
-        Keyword temp = new Keyword();
-        for (Result res: resultRepository.findAll()) {
-            temp = keywordRepository.findByWordIgnoreCase(res.getResult());
-            if (temp != null) {
-                resultMap.put(res,temp);
-            }
-            else {
-                resultMap.put(res,new Keyword("brak"));
+    public List<RKP> matchKeywords() {
+        List<RKP> resultList = new ArrayList<>();
+        Keyword tempKeyword = new Keyword();
+        for (Result res : resultRepository.findAll()) {
+            tempKeyword = keywordRepository.findByWordIgnoreCase(res.getResult());
+            if (tempKeyword != null) {
+                RKP tempRKP = new RKP(res, tempKeyword);
+                resultList.add(tempRKP);
+            } else {
+                resultList.add(new RKP(res, new Keyword("brak")));
             }
         }
-        return resultMap;
+        return resultList;
 
+    }
+
+    public List<RKP> matchProducts() {
+        List<RKP> resultKeywordProduct = new ArrayList<>();
+        Product tempProduct = new Product();
+        for (RKP rkp : matchKeywords()) {
+            if ((rkp.getKeyword().getWord()) != "brak") {
+                tempProduct = productRepository.findProductsWithKeyword(rkp.getKeyword()).get(0);
+                rkp.setProduct(tempProduct);
+                resultKeywordProduct.add(rkp);
+            }
+            else {
+                resultKeywordProduct.add(rkp);
+            }
+
+        }
+        return resultKeywordProduct;
     }
 
 

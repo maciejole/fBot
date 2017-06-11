@@ -13,7 +13,7 @@
         </h1>
     </div>
 
-    <table class="row" th:class="table" th:align="center" border="3" th:width="500">
+    <table class="table table-striped table-condensed"   border="3" th:width="500">
         <tr th:class="table-row-cell">
             <td th:class="content">
                 Słowo bazowe
@@ -24,13 +24,28 @@
             <td th:class="content">
                 Keyword
             </td>
+            <td th:class="content">
+                Nazwa produktu
+            </td>
+            <td th:class="content">
+                Opis
+            </td>
+            <td th:class="content">
+                Zdjęcie
+            </td>
+
 
         </tr>
-        <tr th:id="lista" th:each="map: ${lista}">
+        <tr th:id="lista" th:each="list: ${lista}">
 
-            <td class="align-middle" th:text="${map.Key.base}" >Base </td>
-            <td class="align-middle" th:text="${map.Key.result}">Result </td>
-            <td class="align-middle" th:text="${map.Value.word}">Keyword </td>
+            <td class="align-middle" th:text="${list.Result.base}" >base </td>
+            <td class="align-middle" th:text="${list.Result.result}">result </td>
+            <td class="align-middle" th:text="${list.Keyword.word}">keyword </td>
+            <td class="align-middle" th:text="${list.Product.name}">productName </td>
+            <td class="align-middle" th:text="${list.Product.description}">productDescription </td>
+            <td class="align-middle" >
+                <a th:href="${list.Product.imageUrl}" target="_blank"><img th:src="${list.Product.imageUrl}" width="auto" height="70px"/></a>
+            </td>
         </tr>
     </table>
     <div class="row">
