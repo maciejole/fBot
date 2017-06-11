@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import pl.hycom.pip.messanger.nlp.NlpService;
+import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
 import pl.hycom.pip.messanger.nlp.Result;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public class NLPController {
 
-    private final NlpService nlpService;
+    private final NlpServiceImplementation nlpService;
     private static final String NLP_VIEW = "nlp";
 
     @GetMapping("/admin/nlp")
