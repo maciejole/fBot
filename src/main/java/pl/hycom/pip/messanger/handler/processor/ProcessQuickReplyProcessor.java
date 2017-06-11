@@ -25,7 +25,7 @@ public class ProcessQuickReplyProcessor implements PipelineProcessor{
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
         EventType eventType = ctx.get(EVENT_TYPE, EventType.class);
-        if (eventType != EventType.quickReply) {
+        if (eventType != EventType.QUICK_REPLY) {
             return 1;
         }
 

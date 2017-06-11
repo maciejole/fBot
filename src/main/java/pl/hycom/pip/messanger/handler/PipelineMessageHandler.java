@@ -46,10 +46,10 @@ public abstract class PipelineMessageHandler {
         params.put(PipelineProcessor.KEYWORDS_EXCLUDED, new LinkedList<Keyword>());
         if (msg instanceof TextMessageEvent) {
             params.put(PipelineProcessor.MESSAGE, ((TextMessageEvent) msg).getText());
-            params.put(PipelineProcessor.EVENT_TYPE, EventType.message);
+            params.put(PipelineProcessor.EVENT_TYPE, EventType.MESSAGE);
         } else if (msg instanceof QuickReplyMessageEvent) {
             params.put(PipelineProcessor.ANSWER, ((QuickReplyMessageEvent)msg).getText());
-            params.put(PipelineProcessor.EVENT_TYPE, EventType.quickReply);
+            params.put(PipelineProcessor.EVENT_TYPE, EventType.QUICK_REPLY);
             params.put(PipelineProcessor.PAYLOAD, ((QuickReplyMessageEvent)msg).getQuickReply().getPayload());
         }
         try {

@@ -48,7 +48,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
         EventType eventType = ctx.get(EVENT_TYPE, EventType.class);
-        if (eventType != EventType.message) {
+        if (eventType != EventType.MESSAGE) {
             return 1;
         }
 

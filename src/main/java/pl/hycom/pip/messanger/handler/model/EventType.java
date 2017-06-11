@@ -5,7 +5,7 @@ package pl.hycom.pip.messanger.handler.model;
  */
 public enum EventType {
 
-    message,
-    quickReply
+    MESSAGE,
+    QUICK_REPLY
 
 }
