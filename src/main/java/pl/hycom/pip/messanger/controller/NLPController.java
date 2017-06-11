@@ -32,6 +32,7 @@ public class NLPController {
 
 
     private static final String NLP_VIEW = "nlp";
+    private Model model;
 
     @GetMapping("/admin/nlp")
     public String showView(Model model) {
@@ -48,9 +49,10 @@ public class NLPController {
 //            temp .addAll(nlpService.matchKeywords(outputList));
 //        }
 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName(NLP_VIEW);
-        mav.addObject("lista" , outputList);
+//        ModelAndView mav = new ModelAndView();
+//        mav.setViewName(NLP_VIEW);
+//        mav.addObject("lista" , outputList);
+        model.addAttribute("lista" , outputList);
         return NLP_VIEW;
 
     }
