@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import pl.hycom.pip.messanger.controller.model.KeywordDTO;
 import pl.hycom.pip.messanger.nlp.NlpService;
 import pl.hycom.pip.messanger.nlp.NlpServiceImplementation;
@@ -39,7 +40,7 @@ public class NLPController {
 
     @ResponseBody
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
-    public  ModelAndView returnResult(@RequestBody List<Result> outputList) {
+    public View returnResult(@RequestBody List<Result> outputList) {
         log.info("Variable received from Extract class " + outputList.size());
         List<Result> temp = new ArrayList<>();
         temp.addAll(outputList);
@@ -49,7 +50,7 @@ public class NLPController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName(NLP_VIEW);
         mav.addObject("lista" , outputList);
-        return mav;
+        return mav.getView();
 
     }
 
