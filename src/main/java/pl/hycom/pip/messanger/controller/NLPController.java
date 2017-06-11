@@ -41,13 +41,11 @@ public class NLPController {
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
     public  String returnResult( List<Result> outputList) {
         log.info("Variable received from Extract class" + outputList.size());
-        List<Result> temp = outputList;
         if (!outputList.isEmpty()) {
-            temp = nlpService.matchKeywords(outputList);
+            outputList = nlpService.matchKeywords(outputList);
         }
         ModelAndView mav = new ModelAndView();
-
-        mav.addObject("lista" , temp);
+        mav.addObject("lista" , outputList);
         mav.setViewName(NLP_VIEW);
         return String.valueOf(mav);
 

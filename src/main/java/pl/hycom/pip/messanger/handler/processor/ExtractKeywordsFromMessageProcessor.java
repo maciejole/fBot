@@ -72,7 +72,6 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
         String out = message;
         try {
-            //NLPController.outputList =
             nlpController.returnResult(nlpService.analyze(message));
             log.info("values passed to controller " + nlpService.analyze(message).toString() );
             log.info("Method to analyze text was called ");
