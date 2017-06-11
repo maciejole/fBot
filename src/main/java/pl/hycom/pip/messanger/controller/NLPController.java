@@ -47,7 +47,7 @@ public class NLPController {
 //            temp .addAll(nlpService.matchKeywords(outputList));
 //        }
         ModelAndView mav = new ModelAndView();
-        mav.addObject("lista" , temp);
+        mav.addObject("lista" , outputList);
         mav.setViewName(NLP_VIEW);
         return String.valueOf(mav);
 
