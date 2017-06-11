@@ -15,11 +15,18 @@
  */
 package pl.hycom.pip.messanger.handler;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import com.github.messenger4j.receive.events.Event;
 import com.github.messenger4j.receive.events.QuickReplyMessageEvent;
 import com.github.messenger4j.receive.events.TextMessageEvent;
 import com.github.messenger4j.receive.handlers.QuickReplyMessageEventHandler;
 import com.github.messenger4j.receive.handlers.TextMessageEventHandler;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.handler.model.EventType;
@@ -28,52 +35,69 @@ import pl.hycom.pip.messanger.pipeline.PipelineManager;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 @Log4j2
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
-public abstract class PipelineMessageHandler {
+public abstract class PipelineMessageHandler<T extends Event> {
 
     private static final String PIPELINECHAIN_NAME = "processMessage";
     private final PipelineManager pipelineManager;
 
-    protected void handleEvent(Event msg) {
-        log.info("Received message - starting prepare answer");
-        Map<String, Object> params = new HashMap<>();
+    protected void prepareParameters(Map<String, Object> params, T msg) {
         params.put(PipelineProcessor.SENDER_ID, msg.getSender().getId());
         params.put(PipelineProcessor.KEYWORDS_EXCLUDED, new LinkedList<Keyword>());
-        if (msg instanceof TextMessageEvent) {
-            params.put(PipelineProcessor.MESSAGE, ((TextMessageEvent) msg).getText());
-            params.put(PipelineProcessor.EVENT_TYPE, EventType.MESSAGE);
-        } else if (msg instanceof QuickReplyMessageEvent) {
-            params.put(PipelineProcessor.ANSWER, ((QuickReplyMessageEvent)msg).getText());
-            params.put(PipelineProcessor.EVENT_TYPE, EventType.QUICK_REPLY);
-            params.put(PipelineProcessor.PAYLOAD, ((QuickReplyMessageEvent)msg).getQuickReply().getPayload());
-        }
+    }
+
+    protected void handleEvent(T msg) {
+        log.info("Received message - starting prepare answer");
+
         try {
+            Map<String, Object> params = new HashMap<>();
+
+            prepareParameters(params, msg);
+
             pipelineManager.runProcess(PIPELINECHAIN_NAME, params);
         } catch (PipelineException e) {
             log.error(e);
         }
     }
-    public static class PipelineTextMessageEventHandler extends PipelineMessageHandler implements TextMessageEventHandler {
+
+    public static class PipelineTextMessageEventHandler extends PipelineMessageHandler<TextMessageEvent> implements TextMessageEventHandler {
         public PipelineTextMessageEventHandler(PipelineManager pipelineManager) {
             super(pipelineManager);
         }
+
         @Override
         public void handle(TextMessageEvent e) {
             handleEvent(e);
         }
+
+        @Override
+        protected void prepareParameters(Map<String, Object> params, TextMessageEvent msg) {
+            super.prepareParameters(params, msg);
+
+            params.put(PipelineProcessor.MESSAGE, msg.getText());
+            params.put(PipelineProcessor.EVENT_TYPE, EventType.MESSAGE);
+        }
     }
-    public static class PipelineQuickReplyMessageEventHandler extends PipelineMessageHandler implements QuickReplyMessageEventHandler {
+
+    public static class PipelineQuickReplyMessageEventHandler extends PipelineMessageHandler<QuickReplyMessageEvent> implements QuickReplyMessageEventHandler {
         public PipelineQuickReplyMessageEventHandler(PipelineManager pipelineManager) {
             super(pipelineManager);
         }
+
         @Override
         public void handle(QuickReplyMessageEvent e) {
             handleEvent(e);
         }
+
+        @Override
+        protected void prepareParameters(Map<String, Object> params, QuickReplyMessageEvent msg) {
+            super.prepareParameters(params, msg);
+
+            params.put(PipelineProcessor.ANSWER, msg.getText());
+            params.put(PipelineProcessor.EVENT_TYPE, EventType.QUICK_REPLY);
+            params.put(PipelineProcessor.PAYLOAD, msg.getQuickReply().getPayload());
+        }
     }
+
 }
