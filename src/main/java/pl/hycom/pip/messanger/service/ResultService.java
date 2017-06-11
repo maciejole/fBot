@@ -61,5 +61,10 @@ public class ResultService {
         resultRepository.save(result);
     }
 
+    public void removeAll() {
+        log.info("Deleting all results from database");
+        resultRepository.deleteAll();
+    }
+
 
 }

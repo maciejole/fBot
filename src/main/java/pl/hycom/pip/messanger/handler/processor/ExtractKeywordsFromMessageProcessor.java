@@ -25,6 +25,7 @@ import pl.hycom.pip.messanger.service.NlpService;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.service.ResultService;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -41,6 +42,9 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
     @Autowired
     NlpService nlpService;
+
+    @Autowired
+    ResultService resultService;
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
@@ -66,6 +70,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         String out = message;
 
         try {
+            resultService.removeAll();
             nlpService.analyze(message);
         } catch (Exception ex) {
             log.error("Error in analyze method called in " + this.getClass() , ex.getMessage(),ex);
