@@ -45,8 +45,8 @@ public class NlpServiceImplementation implements NlpService {
 
     }
 
-    public ArrayList<Result> inputStreamToResultList(InputStream is) {
-        ArrayList<Result> resultList = new ArrayList<Result>();
+    public List<Result> inputStreamToResultList(InputStream is) {
+        List<Result> resultList = new ArrayList<Result>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 
@@ -69,19 +69,18 @@ public class NlpServiceImplementation implements NlpService {
 
 
         } catch (Exception ex) {
-            log.error("Exception, with message: '"+ex.getMessage() +"' occured while deserializing response to Result object. Deserialized result is: " + resultList, ex);
+            log.error("Exception, with message: '" + ex.getMessage() + "' occured while deserializing response to Result object. Deserialized result is: " + resultList, ex);
         }
         return resultList;
     }
 
     @Override
-    public ArrayList<Result> matchKeywords(ArrayList<Result> list) {
+    public List<Result> matchKeywords(List<Result> list) {
         log.info("Method for matching keywords was called");
         for (Result result : list) {
             if (((keywordService.findKeywordByWord(result.getResult())) != null)) {
                 result.setKeyword(keywordService.findKeywordByWord(result.getResult()).getWord());
-            }
-            else {
+            } else {
                 result.setKeyword("brak keyworda");
             }
 
@@ -89,7 +88,7 @@ public class NlpServiceImplementation implements NlpService {
         return list;
     }
 
-    public ArrayList<Result> nlpGetOutput(String id) throws IOException {
+    public List<Result> nlpGetOutput(String id) throws IOException {
         URL url = new URL(NLPrestURL + "download" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
@@ -135,7 +134,7 @@ public class NlpServiceImplementation implements NlpService {
 
     }
 
-    public ArrayList<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
+    public List<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
         String id = nlpStringSender(message);
         JSONObject liner2 = new JSONObject();
         liner2.put("model", "top9");

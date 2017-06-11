@@ -24,19 +24,21 @@ public class Tokenizator {
 
 
         //Loading the Tokenizer model
-        InputStream inputStream = new FileInputStream(FILE_PATH);
-        TokenizerModel tokenModel = new TokenizerModel(inputStream);
-
-        //Instantiating the TokenizerME class
-        TokenizerME tokenizer = new TokenizerME(tokenModel);
-
-        //Tokenizing the given raw text
-        String[] tokens = tokenizer.tokenize(sentence);
-
-        //Printing the tokens
-        for (String a : tokens) {
-            log.info(a);
+        try {
+            InputStream inputStream = new FileInputStream(FILE_PATH);
+            TokenizerModel tokenModel = new TokenizerModel(inputStream);
+            //Instantiating the TokenizerME class
+            TokenizerME tokenizer = new TokenizerME(tokenModel);
+            //Tokenizing the given raw text
+            String[] tokens = tokenizer.tokenize(sentence);
+            //Printing the tokens
+            for (String a : tokens) {
+                log.info("Output from tokens " + a);
+            }
+        } catch (Exception ex) {
+            log.error("Error during reading from InputStream " + ex.getMessage(), ex);
         }
+
 
     }
 }

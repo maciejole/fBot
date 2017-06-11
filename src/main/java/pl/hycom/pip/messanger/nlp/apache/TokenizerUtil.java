@@ -28,7 +28,7 @@ public class TokenizerUtil {
             modelIn = new FileInputStream(modelFile);
             model = new TokenizerModel(modelIn);
         } catch (IOException e) {
-            log.error("File not found or error involved with InputStream" + e.getMessage());
+            log.error("File not found or error involved with InputStream" + e.getMessage() ,e );
 
         }
     }

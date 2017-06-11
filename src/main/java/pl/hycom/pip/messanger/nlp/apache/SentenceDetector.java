@@ -7,6 +7,8 @@ import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.util.Span;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 @Log4j2
 public class SentenceDetector {
@@ -17,19 +19,20 @@ public class SentenceDetector {
 
         String sen = "Witaj w Hycomie. To jest przykładowy tekst , który będzie podzielony na mniejsze części. Właśnie tak.";
         //Loading a sentence model
-        InputStream inputStream = new FileInputStream(FILE_PATH);
-        SentenceModel model = new SentenceModel(inputStream);
-
-        //Instantiating the SentenceDetectorME class
-        SentenceDetectorME detector = new SentenceDetectorME(model);
-
-        //Detecting the position of the sentences in the paragraph
-        Span[] spans = detector.sentPosDetect(sen);
-
-        //Printing the sentences and their spans of a paragraph
-        for (Span span : spans) {
-            log.info(sen.substring(span.getStart(), span.getEnd())+" "+ span);
+        try {
+            InputStream inputStream = new FileInputStream(FILE_PATH);
+            SentenceModel model = new SentenceModel(inputStream);
+            //Instantiating the SentenceDetectorME class
+            SentenceDetectorME detector = new SentenceDetectorME(model);
+            //Detecting the position of the sentences in the paragraph
+            Span[] spans = detector.sentPosDetect(sen);
+            //Printing the sentences and their spans of a paragraph
+            for (Span span : spans) {
+                log.info("Output result from Span objects " + sen.substring(span.getStart(), span.getEnd())+" "+ span);            }
+        }catch (IOException  ex ) {
+            log.error("error during reading from InputStream  "  + ex.getMessage() , ex);
         }
+
 
     }
 

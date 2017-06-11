@@ -14,12 +14,15 @@ public class NameFinder {
     private static final String INPUT_FILE = "src/main/resources/nlp_apache_files/names_en.txt";
 
     public static void main(String args[]) throws IOException {
-
         String[] result = NameFinderUtil.getNames(TOKEN_MODE_FILE, MODE_FILE, INPUT_FILE);
-
-        for (String s : result) {
-            log.info(s);
+        try {
+            for (String s : result) {
+                log.info("Output from table " + result + s);
+            }
+        } catch (NullPointerException ex) {
+            log.error("Exception , with message" + ex.getMessage() + " occured during reading from variable  " + result , ex);
         }
+
     }
 }
 
