@@ -49,6 +49,7 @@ public class AccountController {
         return "redirect:/admin";
     }
 
+    @RolesAllowed(Role.Name.ADMIN)
     @GetMapping("/user/account/{userId}")
     public String showAccount(Model model, @PathVariable("userId") final Integer userId) {
         UserDTO user = userService.findUserById(userId);
@@ -77,7 +78,13 @@ public class AccountController {
             model.addAttribute("error", new ObjectError("validation.error.user.exists", "Użytkownik z takim adresem email już istnieje."));
             return ACCOUNT_VIEW;
         }
-        return user.getId() == currentUser.getId() ? "redirect:/user/account" : "redirect:/user/account/" + user.getId();
+        if(currentUser.getId() != null) {
+            return user.getId().equals(currentUser.getId()) ? "redirect:/user/account" : "redirect:/user/account/" + user.getId();
+        }
+        else {
+            log.info(" There is no user logged in");
+            return "redirect:/admin";
+        }
     }
 
 }
