@@ -43,7 +43,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     @Autowired
     @Qualifier("nlpService")
-    private NlpService nlpService;
+    private NlpServiceImplementation nlpService;
     @Autowired
     private NLPController nlpController;
 
