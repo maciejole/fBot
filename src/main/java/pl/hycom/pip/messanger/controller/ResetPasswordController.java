@@ -1,6 +1,9 @@
 package pl.hycom.pip.messanger.controller;
 
-import lombok.extern.log4j.Log4j2;
+import java.net.MalformedURLException;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,14 +14,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.controller.model.ResetPassword;
 import pl.hycom.pip.messanger.controller.model.UserEmail;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.EmailService;
 import pl.hycom.pip.messanger.service.UserService;
-
-import javax.validation.Valid;
-import java.net.MalformedURLException;
 
 /**
  * Created by Piotr on 21.05.2017.
@@ -46,7 +48,7 @@ public class ResetPasswordController {
     @PostMapping("account/password/change/reset/token/send")
     public String sendEmail(@Valid UserEmail userEmail, BindingResult bindingResult, Model model, RedirectAttributes attributes) throws MalformedURLException {
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             model.addAttribute("userEmail", userEmail);
             model.addAttribute("errors", bindingResult.getFieldErrors());
             log.info("ResetPassword validation error." + bindingResult.getAllErrors());
@@ -59,7 +61,7 @@ public class ResetPasswordController {
         }
         User user = userService.findUserByEmail(userEmail.getUserMail());
 
-        if(user == null) {
+        if (user == null) {
             model.addAttribute("info", new ObjectError("sendOrNotSend", "Email został wysłany"));
             return REDIRECT_FORGET_VIEW;
         }
@@ -94,11 +96,12 @@ public class ResetPasswordController {
         }
 
         if (userService.validatePasswordResetToken(resetPassword.getResetToken(), resetPassword.getUserMail())) {
-                userService.changePassword(userService.findUserByEmail(resetPassword.getUserMail()), resetPassword.getNewPassword());
-                attributes.addFlashAttribute("passwordChangedOrNotChanged", "Hasło zostało zmienione");
-                return "redirect:/login";
+            userService.changePassword(userService.findUserByEmail(resetPassword.getUserMail()), resetPassword.getNewPassword());
+            attributes.addFlashAttribute("passwordChangedOrNotChanged", "Hasło zostało zmienione");
+            return "redirect:/login";
         }
-        log.info("Failed to change password user " +  userService.findUserByEmail(resetPassword.getUserMail()).getUsername());
+
+        log.info("Failed to change password user " + userService.findUserByEmail(resetPassword.getUserMail()).getUsername());
         attributes.addFlashAttribute("passwordChangedOrNotChanged", "If user exists, mail was changed.");
         return "redirect:/login";
     }

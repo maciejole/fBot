@@ -2,6 +2,8 @@ package pl.hycom.pip.messanger.repository;
 
 import java.time.LocalDateTime;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +17,7 @@ public interface PasswordResetTokenRepository extends CrudRepository<PasswordRes
 
     PasswordResetToken findByToken(String token);
 
+    @Transactional
     Long deleteByExpiryDateLessThan(LocalDateTime date);
 
 }
