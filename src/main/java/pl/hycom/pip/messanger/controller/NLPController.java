@@ -26,7 +26,7 @@ public class NLPController {
 //         return NLP_VIEW;
 //    }
 
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
     public String returnResult(Model model)  {
         log.info("Variable received from service " + nlpService.analyze());
         List<Result> temp = new ArrayList<>();
