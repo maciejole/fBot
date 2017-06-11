@@ -81,7 +81,7 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
         try {
             userService.addUser(user);
         } catch (EmailNotUniqueException e) {
-            log.error("Email is not unique");
+            log.error("Email {} is not unique", user.getEmail());
         }
     }
 

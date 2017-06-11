@@ -1,7 +1,10 @@
 package pl.hycom.pip.messanger.service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -204,6 +208,15 @@ public class UserService implements UserDetailsService {
         String url = protocol + "://" + host + ":" + port + "/account/password/change/reset/token/" + token;
         Message message = new Message("messenger.recommendations2017@gmail.com", to, "Reset password", url);
         return message.constructEmail();
+    }
+
+    @Scheduled(fixedDelay = 5 * 60 * 1000) // every 5 minutes
+    public void deleteExpiredTokens() {
+        log.info("deleteExpiredTokens method from Scheduler invoked");
+
+        Long numberOfDeletedTokens = tokenRepository.deleteByExpiryDateLessThan(Date.from(Instant.now().minus(1, ChronoUnit.HOURS)));
+
+        log.info("Deleted[" + numberOfDeletedTokens + "] old tokens");
     }
 
 }

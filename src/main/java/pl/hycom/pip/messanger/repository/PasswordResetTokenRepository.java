@@ -1,5 +1,7 @@
 package pl.hycom.pip.messanger.repository;
 
+import java.util.Date;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +14,7 @@ import pl.hycom.pip.messanger.repository.model.PasswordResetToken;
 public interface PasswordResetTokenRepository extends CrudRepository<PasswordResetToken, Integer> {
 
     PasswordResetToken findByToken(String token);
+
+    Long deleteByExpiryDateLessThan(Date date);
 
 }

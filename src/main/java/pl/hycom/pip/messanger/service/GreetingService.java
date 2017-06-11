@@ -19,7 +19,6 @@ package pl.hycom.pip.messanger.service;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,12 +91,15 @@ public class GreetingService implements InitializingBean {
     }
 
     private List<com.github.messenger4j.profile.Greeting> getGreetings() {
+        List<com.github.messenger4j.profile.Greeting> greetings = new ArrayList<>();
+
         try {
-            return new ArrayList<>(profileClient.getWelcomeMessage().getGreetings());
+            greetings.addAll(profileClient.getWelcomeMessage().getGreetings());
         } catch (MessengerApiException | MessengerIOException e) {
             log.error("Error during getting greeting text from facebook", e);
-            return Collections.emptyList();
         }
+
+        return greetings;
     }
 
     public void addGreetings(@Valid GreetingListWrapper greetingListWrapper) {
