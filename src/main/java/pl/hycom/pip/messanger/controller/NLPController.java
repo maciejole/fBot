@@ -32,22 +32,25 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
-    @GetMapping("/admin/nlp")
-    public String showView(Model model) {
-        return NLP_VIEW;
-    }
+//    @GetMapping("/admin/nlp")
+//    public String showView(Model model) {
+//        return NLP_VIEW;
+//    }
 
 
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
-    public String returnResult(List<Result> outputList) {
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
+    public  String returnResult( List<Result> outputList) {
         log.info("Variable received from Extract class" + outputList.size());
         List<Result> temp = outputList;
         if (!outputList.isEmpty()) {
             temp = nlpService.matchKeywords(outputList);
         }
-        ModelAndView mav = new ModelAndView("/admin/nlp");
+        ModelAndView mav = new ModelAndView();
+
         mav.addObject("lista" , temp);
-        return NLP_VIEW;
+        mav.setViewName(NLP_VIEW);
+        return String.valueOf(mav);
+
     }
 
 
