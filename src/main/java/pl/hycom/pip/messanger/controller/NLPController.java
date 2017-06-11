@@ -2,6 +2,7 @@ package pl.hycom.pip.messanger.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import pl.hycom.pip.messanger.service.KeywordService;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,31 +31,24 @@ import java.util.List;
 public class NLPController {
 
     private final NlpService nlpService;
-    private Model model;
 
     private static final String NLP_VIEW = "nlp";
 
     @GetMapping("/admin/nlp")
     public String showView(Model model) {
-        this.model = model;
-
-        return NLP_VIEW;
+         return NLP_VIEW;
     }
 
     @ResponseBody
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
-    public String returnResult(@RequestBody @ModelAttribute List<Result> outputList) {
-        log.info("Variable received from Extract class " + outputList.size());
+    public String returnResult(Model model)  {
+        log.info("Variable received from Extract class " + nlpService.analyze());
         List<Result> temp = new ArrayList<>();
-        temp.addAll(outputList);
+        temp.addAll(nlpService.analyze());
 //        if (!outputList.isEmpty()) {
 //            temp .addAll(nlpService.matchKeywords(outputList));
 //        }
-
-//        ModelAndView mav = new ModelAndView();
-//        mav.setViewName(NLP_VIEW);
-//        mav.addObject("lista" , outputList);
-        model.addAttribute("lista" , outputList);
+        model.addAttribute("lista" , temp);
         return NLP_VIEW;
 
     }

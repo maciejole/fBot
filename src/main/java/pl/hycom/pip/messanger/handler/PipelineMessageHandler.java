@@ -51,4 +51,8 @@ public class PipelineMessageHandler implements TextMessageEventHandler {
 
     }
 
+    public String getMessage(TextMessageEvent msg) {
+        return msg.getText();
+    }
+
 }

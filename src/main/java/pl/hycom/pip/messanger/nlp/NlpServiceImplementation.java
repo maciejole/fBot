@@ -1,18 +1,20 @@
 package pl.hycom.pip.messanger.nlp;
 
 
+import com.github.messenger4j.receive.events.TextMessageEvent;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
 ;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import pl.hycom.pip.messanger.handler.PipelineMessageHandler;
 import pl.hycom.pip.messanger.service.KeywordService;
 
 import javax.ws.rs.client.Client;
@@ -36,6 +38,8 @@ import java.util.List;
 public class NlpServiceImplementation implements NlpService {
 
 
+    private PipelineMessageHandler pipelineMessageHandler;
+    private TextMessageEvent textMessageEvent;
     private KeywordService keywordService;
 
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
@@ -134,14 +138,28 @@ public class NlpServiceImplementation implements NlpService {
 
 
     }
+    @Nullable
+    public List<Result> analyze() {
+        try {
+            String id = nlpStringSender(returnMessage());
+            JSONObject liner2 = new JSONObject();
+            liner2.put("model", "top9");
+            id = nlpProcess("liner2", id, liner2);
+            return nlpGetOutput(id);
+        } catch (IOException | JSONException ex) {
+            log.error("Exception in analyze method caused by " + ex.getMessage(), ex);
+            return null;
+        } catch (InterruptedException e) {
+            log.error("Exception in analyze method caused by " + e.getMessage(), e);
+            return null;
+        }
+    }
 
-    public List<Result> analyze(String message) throws IOException, InterruptedException, JSONException {
-        String id = nlpStringSender(message);
-        JSONObject liner2 = new JSONObject();
-        liner2.put("model", "top9");
-        id = nlpProcess("liner2", id, liner2);
-        return nlpGetOutput(id);
 
+
+
+    public String returnMessage() {
+        return pipelineMessageHandler.getMessage(textMessageEvent);
     }
 
 

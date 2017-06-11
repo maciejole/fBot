@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,9 +18,11 @@ public interface NlpService {
     public List<Result> nlpGetOutput(String id) throws IOException;
     public  String getRes(Response res) throws IOException;
     public  String nlpProcess(String toolName, String id, JSONObject options) throws IOException, InterruptedException, JSONException;
-    public  List<Result> analyze(String message) throws IOException, InterruptedException, JSONException;
+    public  List<Result> analyze();
     public  List<Result> inputStreamToResultList(InputStream is) ;
     public List<Result> matchKeywords(List<Result> list);
+    public String returnMessage();
+
 
 
 }
