@@ -38,7 +38,6 @@ import java.util.List;
 public class NlpServiceImplementation implements NlpService {
 
 
-    private PipelineMessageHandler pipelineMessageHandler;
     private TextMessageEvent textMessageEvent;
     private KeywordService keywordService;
 
@@ -140,8 +139,8 @@ public class NlpServiceImplementation implements NlpService {
     }
 
     public String returnMessage() {
-        log.info("returnMessage method wa called" + pipelineMessageHandler.getMessage(textMessageEvent));
-        return pipelineMessageHandler.getMessage(textMessageEvent);
+        log.info("returnMessage method wa called" + textMessageEvent.getText());
+        return textMessageEvent.getText();
 
     }
 
