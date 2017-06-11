@@ -1,11 +1,11 @@
 package pl.hycom.pip.messanger.nlp;
 
-import com.sun.org.apache.xml.internal.security.utils.XMLUtils;
+
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
