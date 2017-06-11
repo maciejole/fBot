@@ -40,12 +40,12 @@ public class NLPController {
     @ResponseBody
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
     public  String returnResult(@RequestBody List<Result> outputList) {
-        log.info("Variable received from Extract class" + outputList.size());
+        log.info("Variable received from Extract class " + outputList.size());
         List<Result> temp = new ArrayList<>();
         temp.addAll(outputList);
-        if (!outputList.isEmpty()) {
-            temp .addAll(nlpService.matchKeywords(outputList));
-        }
+//        if (!outputList.isEmpty()) {
+//            temp .addAll(nlpService.matchKeywords(outputList));
+//        }
         ModelAndView mav = new ModelAndView();
         mav.addObject("lista" , temp);
         mav.setViewName(NLP_VIEW);
