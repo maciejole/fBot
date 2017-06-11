@@ -144,7 +144,7 @@ public class NlpServiceImplementation implements NlpService {
         return pipelineMessageHandler.getMessage(textMessageEvent);
 
     }
-    
+
     @Nullable
     public List<Result> analyze() {
         try {
