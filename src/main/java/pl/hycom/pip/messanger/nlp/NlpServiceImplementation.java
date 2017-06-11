@@ -66,7 +66,7 @@ public class NlpServiceImplementation implements NlpService {
             NodeList baseList = doc.getElementsByTagName("base");
             for (int i = 0; i < Integer.min(baseList.getLength(), orthList.getLength());  i++) {
 
-                resultList.add(new Result());
+                resultList.add(new Result(baseList.item(i).getTextContent(),orthList.item(i).getTextContent()));
             }
 
 
