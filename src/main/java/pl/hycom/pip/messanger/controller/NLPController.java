@@ -32,13 +32,13 @@ public class NLPController {
 
     private static final String NLP_VIEW = "nlp";
 
-//    @GetMapping("/admin/nlp")
-//    public String showView(Model model) {
-//        return NLP_VIEW;
-//    }
+    @GetMapping("/admin/nlp")
+    public String showView(Model model) {
+        return NLP_VIEW;
+    }
 
     @ResponseBody
-    @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/nlp", method = RequestMethod.POST)
     public  String returnResult(@RequestBody List<Result> outputList) {
         log.info("Variable received from Extract class" + outputList.size());
         List<Result> temp = new ArrayList<>();
