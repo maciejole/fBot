@@ -18,13 +18,12 @@ import java.util.List;
 public class NLPController {
 
     private final NlpService nlpService;
-
     private static final String NLP_VIEW = "nlp";
 
     @GetMapping("/admin/nlp")
     public String showView(Model model) {
-//        log.info("Variable received from service " + nlpService.analyze());
-//        model.addAttribute("lista" , nlpService.analyze());
+        log.info("Variable received from service in showView " + nlpService.analyze());
+        model.addAttribute("lista" , nlpService.analyze());
          return NLP_VIEW;
     }
 
