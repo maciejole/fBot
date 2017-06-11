@@ -37,9 +37,9 @@ public class NLPController {
 //        return NLP_VIEW;
 //    }
 
-
+    @ResponseBody
     @RequestMapping(value = "/admin/nlp", method = RequestMethod.GET)
-    public  String returnResult( List<Result> outputList) {
+    public  String returnResult(@RequestBody List<Result> outputList) {
         log.info("Variable received from Extract class" + outputList.size());
         List<Result> temp = new ArrayList<>();
         temp.addAll(outputList);
