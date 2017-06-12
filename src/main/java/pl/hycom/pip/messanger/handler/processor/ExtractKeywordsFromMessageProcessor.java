@@ -22,13 +22,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.hycom.pip.messanger.controller.model.ResultDTO;
 import pl.hycom.pip.messanger.handler.model.EventType;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.messanger.repository.ResultRepository;
 import pl.hycom.pip.messanger.repository.model.Keyword;
-import pl.hycom.pip.messanger.repository.model.Result;
 import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.NlpService;
 import pl.hycom.pip.messanger.service.ResultService;
@@ -43,80 +42,78 @@ import java.util.stream.Collectors;
 @Log4j2
 
 public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
-
+    
     private static final String CHARS_TO_REMOVE_REGEX = "[{}\\[\\]()!@#$%^&*~'?\".,/+]";
     @Autowired
     NlpService nlpService;
-
+    
     @Autowired
     ResultService resultService;
-
+    
     @Autowired
     KeywordService keywordService;
     
-    @Autowired
-    ResultRepository resultRepository;
-
+    
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
         EventType eventType = ctx.get(EVENT_TYPE, EventType.class);
         if (eventType != EventType.MESSAGE) {
             return 1;
         }
-
+        
         log.info("Started keyword generating");
-
+        
         String message = ctx.get(MESSAGE, String.class);
         Set<String> keywordsStrings = extractKeywords(message);
         log.info("Keywords extracted from message [{}]: {}", message, keywordsStrings);
-    
+        
         try {
             resultService.removeAll();
             nlpService.analyze(message);
         } catch (Exception ex) {
-            log.error("Error in analyze method called in " + this.getClass() , ex.getMessage(),ex);
+            log.error("Error in analyze method called in " + this.getClass(), ex.getMessage(), ex);
         }
-
+        
         //List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
-
+        
         List<Keyword> keywordList = new ArrayList<>();
-        for ( Result res: resultRepository.findAll()  ) {
-            keywordList.add(new Keyword(res.getResult()));
+        for (ResultDTO resultDTO : resultService.findAllResults()) {
+            keywordList.add(new Keyword(resultDTO.getResult()));
         }
         ctx.put(KEYWORDS, keywordList);
         return 1;
     }
-
+    
     Set<String> extractKeywords(String message) {
         return processKeywords(StringUtils.split(processMessage(message), " "));
     }
-
+    
     protected String processMessage(String message) {
         if (StringUtils.isBlank(message)) {
             return StringUtils.EMPTY;
         }
-
+        
         String out = message;
-
+        
         
         out = StringUtils.replaceAll(out, CHARS_TO_REMOVE_REGEX, StringUtils.EMPTY);
         out = StringUtils.lowerCase(out);
-
+        
         return out;
     }
-
+    
     protected Set<String> processKeywords(@NonNull String[] keywords) {
         return Arrays.stream(keywords)
                 .filter(s -> StringUtils.length(s) > 2)
                 .collect(Collectors.toSet());
     }
-
-
+    
+    
     private List<Keyword> convertStringsToKeywords(Set<String> keywords) {
         if (CollectionUtils.isEmpty(keywords)) {
             return Collections.emptyList();
         }
-
+        
         // This stream maps set of strings into list of keywords
         return keywords.stream()
                 .map(s -> keywordService.findKeywordByWord(s))
