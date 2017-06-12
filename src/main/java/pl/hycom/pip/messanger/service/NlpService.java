@@ -3,7 +3,6 @@ package pl.hycom.pip.messanger.service;
 
 import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.MapperFacade;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
@@ -140,12 +139,11 @@ public class NlpService {
     }
 
 
-    @Nullable
-    public void analyze(String message) {
+    public List<Result> analyze(String message) {
+        List<Result> resultList = new ArrayList<>();
         try {
             String id = nlpStringSender(message);
             id = nlpProcess(id);
-            List<Result> resultList = new ArrayList<>();
             resultList.addAll(nlpGetOutput(id));
             resultService.addResult(resultList);
    
@@ -156,6 +154,7 @@ public class NlpService {
             log.error("Exception in analyze method caused by " + e.getMessage(), e);
 
         }
+        return resultList;
     }
 
 

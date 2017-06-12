@@ -28,6 +28,7 @@ import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Result;
 import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.NlpService;
 import pl.hycom.pip.messanger.service.ResultService;
@@ -66,22 +67,27 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         String message = ctx.get(MESSAGE, String.class);
         Set<String> keywordsStrings = extractKeywords(message);
         log.info("Keywords extracted from message [{}]: {}", message, keywordsStrings);
-        
+        List<Result> resultList = new ArrayList<>();
         try {
             resultService.removeAll();
-            nlpService.analyze(message);
+            resultList.addAll(nlpService.analyze(message));
         } catch (Exception ex) {
             log.error("Error in analyze method called in " + this.getClass(), ex.getMessage(), ex);
         }
         
-        //List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
+        List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
         
         List<Keyword> keywordList = new ArrayList<>();
-        log.info("Received resultlist" + resultService.findAllResults().size() + resultService.findAllResults() );
-        for (ResultDTO resultDTO : resultService.findAllResults()) {
-            keywordList.add(new Keyword(resultDTO.getResult()));
+        log.info("Received resultlist" + resultList.size() + resultList);
+        if (resultList.isEmpty() != true) {
+            for (Result result : resultList) {
+                keywordList.add(new Keyword(result.getResult()));
+            }
+            ctx.put(KEYWORDS, keywordList);
+        } else {
+            ctx.put(KEYWORDS, keywords);
         }
-        ctx.put(KEYWORDS, keywordList);
+        
         return 1;
     }
     
