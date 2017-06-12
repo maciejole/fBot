@@ -77,6 +77,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         //List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
         
         List<Keyword> keywordList = new ArrayList<>();
+        log.info("Received resultlist" + resultService.findAllResults().size() + resultService.findAllResults() );
         for (ResultDTO resultDTO : resultService.findAllResults()) {
             keywordList.add(new Keyword(resultDTO.getResult()));
         }
