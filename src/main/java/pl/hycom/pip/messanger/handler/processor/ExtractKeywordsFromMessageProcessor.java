@@ -75,18 +75,25 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
             log.error("Error in analyze method called in " + this.getClass(), ex.getMessage(), ex);
         }
         
-        List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
-        
-        List<Keyword> keywordList = new ArrayList<>();
+        Set<String> stringFromAnalyzedMessage = new HashSet<>();
+        List<Keyword> keywords = new ArrayList<>();
         log.info("Received resultlist" + resultList.size() + resultList);
         if (resultList.isEmpty() != true) {
             for (Result result : resultList) {
-                keywordList.add(new Keyword(result.getResult()));
+                stringFromAnalyzedMessage.add(result.getResult());
             }
-            ctx.put(KEYWORDS, keywordList);
-        } else {
-            ctx.put(KEYWORDS, keywords);
+            keywords.addAll(convertStringsToKeywords(stringFromAnalyzedMessage));
+    
         }
+        else {
+             keywords.addAll(convertStringsToKeywords(keywordsStrings));
+        }
+            
+            
+            
+            ctx.put(KEYWORDS, keywords);
+            
+            
         
         return 1;
     }
