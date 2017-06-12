@@ -64,3 +64,6 @@ insert into ROLES (id, authority) VALUES
 INSERT INTO USERS_ROLES (USER_ID, ROLES_ID)
 
     VALUES (1,1), (1,2), (2,2), (3,2), (3,1), (4,2), (5,2), (6,1), (7,2);
+
+INSERT INTO RESULT (BASE,RESULT, KEYWORD)
+VALUES

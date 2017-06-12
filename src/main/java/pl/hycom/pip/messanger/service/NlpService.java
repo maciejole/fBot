@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jvnet.hk2.annotations.Service;
-;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.w3c.dom.Document;
@@ -18,7 +17,6 @@ import org.xml.sax.SAXException;
 import pl.hycom.pip.messanger.controller.model.ResultDTO;
 import pl.hycom.pip.messanger.repository.ResultRepository;
 import pl.hycom.pip.messanger.repository.model.Result;
-import pl.hycom.pip.messanger.service.KeywordService;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -36,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+;
 
 @Log4j2
 @Service
@@ -105,32 +105,38 @@ public class NlpService {
         return res.readEntity(String.class);
 
     }
+    
+    public JSONObject prepareRequest(String id) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("file", id);
+        jsonObject.put("tool" , "liner2");
+        JSONObject options = new JSONObject();
+        options.put("model" , "top9");
+        jsonObject.put("options" ,options );
+        return jsonObject;
+        
+    }
 
-    public String nlpProcess(String toolName, String id, JSONObject options) throws IOException, InterruptedException, JSONException {
-        JSONObject request = new JSONObject();
+    public String nlpProcess(String id) throws IOException, InterruptedException, JSONException {
         Client client = ClientBuilder.newClient();
-        request.put("file", id);
-        request.put("tool", toolName);
-        request.put("options", options);
-        String taskid = client.target(NLPrestURL + "startTask").request().
-                post(Entity.entity(request.toString(), MediaType.APPLICATION_JSON)).readEntity(String.class);
-
+        String taskid = null;
+        try {
+            taskid = client.target(NLPrestURL + "startTask").request().
+                    post(Entity.entity(prepareRequest(id).toString(), MediaType.APPLICATION_JSON)).readEntity(String.class);
+        } catch (JSONException ex) {
+            log.error("Error " + ex.getMessage() + "ocurred during passing JSONObject" , ex);
+        }
         String status = "";
-        JSONObject jsonres = new JSONObject();
+        JSONObject jsonResp = new JSONObject();
         while (!("DONE").equals(status)) {
             String res = getRes(client.target(NLPrestURL + "getStatus/" + taskid).request().get());
-            jsonres = new JSONObject(res);
-            status = jsonres.getString("status");
+            jsonResp = new JSONObject(res);
+            status = jsonResp.getString("status");
             if (("ERROR").equals(status)) {
-                throw new IOException("Error in processing");
+                throw new IOException("Error in processing data" + "task id" +  taskid );
             }
-            if (("DONE").equals(status)) {
-                Thread.sleep(500);
-            }
-
         }
-
-        return jsonres.getJSONArray("value").getJSONObject(0).getString("fileID");
+        return jsonResp.getJSONArray("value").getJSONObject(0).getString("fileID");
     }
 
 
@@ -138,14 +144,11 @@ public class NlpService {
     public void analyze(String message) {
         try {
             String id = nlpStringSender(message);
-            JSONObject liner2 = new JSONObject();
-            liner2.put("model", "top9");
-            id = nlpProcess("liner2", id, liner2);
+            id = nlpProcess(id);
             List<Result> resultList = new ArrayList<>();
             resultList.addAll(nlpGetOutput(id));
-            for (Result res : resultList) {
-                resultService.addResult(res);
-            }
+            resultService.addResult(resultList);
+   
         } catch (IOException | JSONException ex) {
             log.error("Exception in analyze method caused by " + ex.getMessage(), ex);
 

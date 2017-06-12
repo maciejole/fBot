@@ -68,6 +68,11 @@ public class ResultService {
         log.info("Adding result" + result);
         resultRepository.save(result);
     }
+    
+    public void addResult(List<Result> resultList) {
+        log.info("Adding result" + resultList);
+        resultRepository.save(resultList);
+    }
 
     public void removeAll() {
         log.info("Deleting all results from database");

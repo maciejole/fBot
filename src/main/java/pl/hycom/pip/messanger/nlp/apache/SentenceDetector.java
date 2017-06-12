@@ -7,16 +7,16 @@ import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.tools.util.Span;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 @Log4j2
 public class SentenceDetector {
-
+    
     private final static String FILE_PATH = "src/main/resources/nlp_apache_files/en-sent.bin";
-
-    public static void main(String args[]) throws Exception {
-
+    
+    public static void main(String[] args) throws Exception {
+        
         String sen = "Witaj w Hycomie. To jest przykładowy tekst , który będzie podzielony na mniejsze części. Właśnie tak.";
         //Loading a sentence model
         try {
@@ -28,16 +28,14 @@ public class SentenceDetector {
             Span[] spans = detector.sentPosDetect(sen);
             //Printing the sentences and their spans of a paragraph
             for (Span span : spans) {
-                log.info("Output result from Span objects " + sen.substring(span.getStart(), span.getEnd())+" "+ span);            }
-        }catch (IOException  ex ) {
-            log.error("error during reading from InputStream  "  + ex.getMessage() , ex);
+                log.info("Output result from Span objects " + sen.substring(span.getStart(), span.getEnd()) + " " + span);
+            }
+        } catch (IOException ex) {
+            log.error("error during reading from InputStream  " + ex.getMessage(), ex);
         }
-
-
+        
+        
     }
-
-
-
-
-
+    
+    
 }

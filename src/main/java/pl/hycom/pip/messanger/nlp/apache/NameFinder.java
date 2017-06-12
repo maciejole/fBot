@@ -13,7 +13,7 @@ public class NameFinder {
     private static final String MODE_FILE = "src/main/resources/nlp_apache_files/en-ner-person.bin";
     private static final String INPUT_FILE = "src/main/resources/nlp_apache_files/names_en.txt";
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         String[] result = NameFinderUtil.getNames(TOKEN_MODE_FILE, MODE_FILE, INPUT_FILE);
         try {
             for (String s : result) {

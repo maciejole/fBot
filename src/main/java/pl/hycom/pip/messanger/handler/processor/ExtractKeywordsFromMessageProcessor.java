@@ -22,17 +22,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.hycom.pip.messanger.service.NlpService;
-import pl.hycom.pip.messanger.pipeline.PipelineContext;
-import pl.hycom.pip.messanger.pipeline.PipelineException;
-import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.messanger.service.ResultService;
 import pl.hycom.pip.messanger.handler.model.EventType;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.service.KeywordService;
+import pl.hycom.pip.messanger.service.NlpService;
+import pl.hycom.pip.messanger.service.ResultService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -102,9 +99,6 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
                 .collect(Collectors.toSet());
     }
 
-    public String returnMessage(PipelineContext pipelineContext) {
-        return pipelineContext.get(MESSAGE,String.class);
-    }
 
     private List<Keyword> convertStringsToKeywords(Set<String> keywords) {
         if (CollectionUtils.isEmpty(keywords)) {
