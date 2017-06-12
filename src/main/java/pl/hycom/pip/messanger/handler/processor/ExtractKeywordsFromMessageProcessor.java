@@ -74,14 +74,14 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
             log.error("Error in analyze method called in " + this.getClass(), ex.getMessage(), ex);
         }
         
-        List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
+        //List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
         
-        //List<Keyword> keywordList = new ArrayList<>();
-        //log.info("Received resultlist" + resultService.findAllResults().size() + resultService.findAllResults() );
-        //for (ResultDTO resultDTO : resultService.findAllResults()) {
-          //  keywordList.add(new Keyword(resultDTO.getResult()));
-        //}
-        ctx.put(KEYWORDS, keywords);
+        List<Keyword> keywordList = new ArrayList<>();
+        log.info("Received resultlist" + resultService.findAllResults().size() + resultService.findAllResults() );
+        for (ResultDTO resultDTO : resultService.findAllResults()) {
+            keywordList.add(new Keyword(resultDTO.getResult()));
+        }
+        ctx.put(KEYWORDS, keywordList);
         return 1;
     }
     
