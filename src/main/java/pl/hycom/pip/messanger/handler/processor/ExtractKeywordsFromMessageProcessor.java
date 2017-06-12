@@ -26,7 +26,9 @@ import pl.hycom.pip.messanger.handler.model.EventType;
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.repository.ResultRepository;
 import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Result;
 import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.NlpService;
 import pl.hycom.pip.messanger.service.ResultService;
@@ -51,6 +53,9 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
     @Autowired
     KeywordService keywordService;
+    
+    @Autowired
+    ResultRepository resultRepository;
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
@@ -66,7 +71,14 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         log.info("Keywords extracted from message [{}]: {}", message, keywordsStrings);
 
         List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
-        ctx.put(KEYWORDS, keywords);
+        
+        Iterable<Result> result = new ArrayList<>();
+        result = resultRepository.findAll();
+        List<Keyword> keywordList = new ArrayList<>();
+        for ( Result res: result  ) {
+            keywordList.add(new Keyword(res.getResult()));
+        }
+        ctx.put(KEYWORDS, keywordList);
         return 1;
     }
 
