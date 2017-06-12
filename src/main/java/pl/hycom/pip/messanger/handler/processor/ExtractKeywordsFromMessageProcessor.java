@@ -78,11 +78,9 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         }
 
         //List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
-        
-        Iterable<Result> result = new ArrayList<>();
-        result = resultRepository.findAll();
+
         List<Keyword> keywordList = new ArrayList<>();
-        for ( Result res: result  ) {
+        for ( Result res: resultRepository.findAll()  ) {
             keywordList.add(new Keyword(res.getResult()));
         }
         ctx.put(KEYWORDS, keywordList);
