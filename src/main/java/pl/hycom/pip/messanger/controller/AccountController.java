@@ -18,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.MapperFacade;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.exception.SecurityException;
 import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.UserService;
@@ -72,7 +73,9 @@ public class AccountController {
 
         try {
             userService.addOrUpdateUser(user);
-        } catch (EmailNotUniqueException e) {
+        } catch (EmailNotUniqueException | SecurityException e) {
+            log.warn("Error during user update", e);
+
             model.addAttribute("user", user);
             model.addAttribute("error", new ObjectError("validation.error.user.exists", "Użytkownik z takim adresem email już istnieje."));
             return ACCOUNT_VIEW;
