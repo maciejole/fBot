@@ -69,8 +69,15 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
         String message = ctx.get(MESSAGE, String.class);
         Set<String> keywordsStrings = extractKeywords(message);
         log.info("Keywords extracted from message [{}]: {}", message, keywordsStrings);
+    
+        try {
+            resultService.removeAll();
+            nlpService.analyze(message);
+        } catch (Exception ex) {
+            log.error("Error in analyze method called in " + this.getClass() , ex.getMessage(),ex);
+        }
 
-        List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
+        //List<Keyword> keywords = convertStringsToKeywords(keywordsStrings);
         
         Iterable<Result> result = new ArrayList<>();
         result = resultRepository.findAll();
@@ -93,12 +100,7 @@ public class ExtractKeywordsFromMessageProcessor implements PipelineProcessor {
 
         String out = message;
 
-        try {
-            resultService.removeAll();
-            nlpService.analyze(message);
-        } catch (Exception ex) {
-            log.error("Error in analyze method called in " + this.getClass() , ex.getMessage(),ex);
-        }
+        
         out = StringUtils.replaceAll(out, CHARS_TO_REMOVE_REGEX, StringUtils.EMPTY);
         out = StringUtils.lowerCase(out);
 
