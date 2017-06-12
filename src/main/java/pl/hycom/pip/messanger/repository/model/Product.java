@@ -61,9 +61,7 @@ public class Product implements Serializable {
     private String imageUrl;
 
     @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE,
-            CascadeType.REFRESH
+            CascadeType.ALL
     }, fetch = FetchType.EAGER)
     private Set<Keyword> keywords = new HashSet<>();
 
