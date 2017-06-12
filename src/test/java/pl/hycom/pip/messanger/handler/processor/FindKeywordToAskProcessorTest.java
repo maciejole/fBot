@@ -16,20 +16,14 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-
+import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.repository.model.Product;
+
+import java.util.*;
 
 /**
  * Created by szale_000 on 2017-04-06.
@@ -174,7 +168,7 @@ public class FindKeywordToAskProcessorTest {
         // when
         Throwable thrown = Assertions.catchThrowable(() -> sut.findKeywordToAsk(products, keywordsWanted));
         // then
-        Assertions.assertThat(thrown).isInstanceOf(InvalidParameterException.class);
+        Assertions.assertThat(thrown).isInstanceOf(PipelineException.class);
     }
 
     @Test
@@ -185,7 +179,7 @@ public class FindKeywordToAskProcessorTest {
         // when
         Throwable thrown = Assertions.catchThrowable(() -> sut.findKeywordToAsk(products, keywordsWanted));
         // then
-        Assertions.assertThat(thrown).isInstanceOf(InvalidParameterException.class);
+        Assertions.assertThat(thrown).isInstanceOf(PipelineException.class);
     }
 
 }

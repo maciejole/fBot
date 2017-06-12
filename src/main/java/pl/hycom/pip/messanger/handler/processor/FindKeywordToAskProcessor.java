@@ -16,23 +16,21 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
-import java.security.InvalidParameterException;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
+import pl.hycom.pip.messanger.pipeline.PipelineContext;
+import pl.hycom.pip.messanger.pipeline.PipelineException;
+import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Component;
-
-import lombok.extern.log4j.Log4j2;
-import pl.hycom.pip.messanger.pipeline.PipelineContext;
-import pl.hycom.pip.messanger.pipeline.PipelineException;
-import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.messanger.repository.model.Keyword;
-import pl.hycom.pip.messanger.repository.model.Product;
 
 /**
  * Created by szale_000 on 2017-04-06.
@@ -70,9 +68,9 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
      *            Keywordy, które zostały wyciągnięte z zapytań
      * @return null if no keyword found
      */
-    Optional<Keyword> findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) {
+    Optional<Keyword> findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) throws PipelineException {
         if (CollectionUtils.isEmpty(products)) {
-            throw new InvalidParameterException("Products cannot be null or empty");
+            throw new PipelineException("Products cannot be null or empty");
         }
 
         int desiredCount = products.size() / 2;
