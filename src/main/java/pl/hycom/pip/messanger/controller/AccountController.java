@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,7 +64,7 @@ public class AccountController {
     }
 
     @PostMapping("/user/account/update")
-    public String updateAccount(@Valid UserDTO user, BindingResult bindingResult, Model model, HttpServletRequest request) {
+    public String updateAccount(@Valid UserDTO user, BindingResult bindingResult, Model model, @AuthenticationPrincipal User currentUser) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("user", user);
             model.addAttribute("errors", bindingResult.getFieldErrors());
@@ -80,8 +81,13 @@ public class AccountController {
             model.addAttribute("error", new ObjectError("validation.error.user.exists", "Użytkownik z takim adresem email już istnieje."));
             return ACCOUNT_VIEW;
         }
-
-        return "redirect:/user/account/" + user.getId();
+        if(currentUser.getId() != null) {
+            return user.getId().equals(currentUser.getId()) ? "redirect:/user/account" : "redirect:/user/account/" + user.getId();
+        }
+        else {
+            log.info(" There is no user logged in");
+            return "redirect:/admin";
+        }
     }
 
 }
