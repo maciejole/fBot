@@ -80,7 +80,7 @@ public class AccountController {
             return ACCOUNT_VIEW;
         }
 
-        if (currentUser.getId() != null) {
+        if (currentUser != null) {
             return user.getId().equals(currentUser.getId()) ? "redirect:/user/account" : "redirect:/user/account/" + user.getId();
         }
 

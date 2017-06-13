@@ -34,11 +34,19 @@
         </pipelinelink>
 		<pipelinelink name="loadProducts">
             <processor bean="loadBestMatchingProductsProcessor"/>
+			<transition returnvalue="1" link="showProductsDecision" />
+		</pipelinelink>
+		<pipelinelink name="showProductsDecision">
+            <processor bean="showProductsDecisionProcessor"/>
 			<transition returnvalue="1" link="sendProductsResponse" />
 			<transition returnvalue="2" link="findKeywordToAsk"/>
 		</pipelinelink>
 		<pipelinelink name="findKeywordToAsk">
 			<processor bean="findKeywordToAskProcessor"/>
+			<transition returnvalue="1" link="userResponseDecision"/>
+		</pipelinelink>
+		<pipelinelink name="userResponseDecision">
+			<processor bean="userResponseDecisionProcessor"/>
 			<transition returnvalue="1" link="sendKeywordQuestion"/>
 			<transition returnvalue="2" link="sendProductsResponse"/>
 		</pipelinelink>

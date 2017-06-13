@@ -16,15 +16,6 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Component;
-import pl.hycom.pip.messanger.pipeline.PipelineContext;
-import pl.hycom.pip.messanger.pipeline.PipelineException;
-import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
-import pl.hycom.pip.messanger.repository.model.Keyword;
-import pl.hycom.pip.messanger.repository.model.Product;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +23,22 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
+
+import lombok.extern.log4j.Log4j2;
+import pl.hycom.pip.messanger.pipeline.PipelineContext;
+import pl.hycom.pip.messanger.pipeline.PipelineException;
+import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
+import pl.hycom.pip.messanger.repository.model.Keyword;
+import pl.hycom.pip.messanger.repository.model.Product;
+
 /**
  * Created by szale_000 on 2017-04-06.
  */
 @Component
 @Log4j2
 public class FindKeywordToAskProcessor implements PipelineProcessor {
-
-    public static final int SEND_KEYWORD_QUESTION = 1;
-    public static final int SEND_PRODUCTS_MESSAGE = 2;
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
@@ -55,11 +53,11 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
         if (keywordToBeAsked.isPresent()) {
             ctx.put(KEYWORD_TO_BE_ASKED, keywordToBeAsked.get());
             log.info("Added keywordToBeAsked: " + keywordToBeAsked.get().getWord());
-            return SEND_KEYWORD_QUESTION;
         } else {
             log.info("No keyword to be asked could be found");
-            return SEND_PRODUCTS_MESSAGE;
         }
+
+        return 1;
     }
 
     /**
