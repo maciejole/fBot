@@ -16,7 +16,6 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -62,14 +61,14 @@ public class LoadBestMatchingProductsProcessor implements PipelineProcessor {
         return 1;
     }
 
-    List<Product> tryFindBestMatchingProducts(List<Keyword> keywordsList, List<Keyword> excludedKeywords) {
+    List<Product> tryFindBestMatchingProducts(List<Keyword> keywordsList, List<Keyword> excludedKeywords) throws PipelineException {
         if (CollectionUtils.isEmpty(keywordsList)) {
             return Collections.emptyList();
         }
         List<Keyword> commonKeywords = new ArrayList<>(keywordsList);
         commonKeywords.retainAll(excludedKeywords);
         if (!commonKeywords.isEmpty()) {
-            throw new InvalidParameterException("Excluded keyword cant be keyword to find");
+            throw new PipelineException("Excluded keyword cant be keyword to find");
         }
         return findBestMatchingProducts(keywordsList, excludedKeywords);
     }
