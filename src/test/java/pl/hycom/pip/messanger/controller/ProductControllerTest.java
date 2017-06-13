@@ -18,6 +18,7 @@ import pl.hycom.pip.messanger.MessengerRecommendationsApplication;
 import pl.hycom.pip.messanger.repository.ProductRepository;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 import pl.hycom.pip.messanger.repository.model.Product;
+import pl.hycom.pip.messanger.service.KeywordService;
 import pl.hycom.pip.messanger.service.ProductService;
 
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
 
 /**
  * Created by piotr on 03.04.2017.
@@ -50,6 +50,9 @@ public class ProductControllerTest {
     private ProductService productService;
 
     @Autowired
+    private KeywordService keywordService;
+
+    @Autowired
     private ProductRepository productRepository;
 
     private List<Integer> list = new ArrayList<>();
@@ -57,7 +60,6 @@ public class ProductControllerTest {
     @Before
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-
 
         Product product2;
         Product product1;
@@ -73,12 +75,12 @@ public class ProductControllerTest {
         product2.setDescription("desc2");
         product2.setImageUrl("url2");
 
-        //productService.addProduct(product1);
-        //productService.addProduct(product2);
+        // productService.addProduct(product1);
+        // productService.addProduct(product2);
         list.add(productService.addProduct(product1).getId());
         list.add(productService.addProduct(product2).getId());
-        //productRepository.save(product1);
-        //productRepository.save(product2);
+        // productRepository.save(product1);
+        // productRepository.save(product2);
         log.error("Before");
 
     }
@@ -86,9 +88,9 @@ public class ProductControllerTest {
     @Test
     public void pageNotFoundTest() throws Exception {
 
-         String user = "tester";
+        String user = "tester";
 
-         mockMvc.perform(get("/"+user+"/products/"))
+        mockMvc.perform(get("/" + user + "/products/"))
                 .andExpect(status().isNotFound());
     }
 
@@ -105,19 +107,17 @@ public class ProductControllerTest {
         mockMvc.perform(get("/admin/products"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("products"))
-                .andExpect(model().attribute("products",hasSize(2)))
-                .andExpect(model().attribute("products",hasItem(allOf(
+                .andExpect(model().attribute("products", hasSize(2)))
+                .andExpect(model().attribute("products", hasItem(allOf(
                         hasProperty("id", is(list.get(0))),
                         hasProperty("name", is("name1")),
                         hasProperty("description", is("desc1")),
-                        hasProperty("imageUrl", is("url1"))
-                ))))
-                .andExpect(model().attribute("products",hasItem(allOf(
+                        hasProperty("imageUrl", is("url1"))))))
+                .andExpect(model().attribute("products", hasItem(allOf(
                         hasProperty("id", is(list.get(1))),
-                hasProperty("name", is("name2")),
-                hasProperty("description", is("desc2")),
-                hasProperty("imageUrl", is("url2"))
-        ))));
+                        hasProperty("name", is("name2")),
+                        hasProperty("description", is("desc2")),
+                        hasProperty("imageUrl", is("url2"))))));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ProductControllerTest {
 
     @Test
     public void addOrUpdateTest() throws Exception {
-        final MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.put("id", Collections.singletonList("0"));
         params.put("name", Collections.singletonList("test product"));
         params.put("name", Collections.singletonList("test product"));
@@ -140,13 +140,14 @@ public class ProductControllerTest {
         params.put("keywords.word", Collections.singletonList("testKeyword"));
 
         mockMvc.perform(post("/admin/products").params(params))
-               .andExpect(status().isFound())
-               .andExpect(view().name("redirect:/admin/products"));
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/admin/products"));
     }
 
     @After
     public void cleanAll() {
         productService.deleteAllProducts();
+        keywordService.deleteAllKeywords();
     }
 
 }

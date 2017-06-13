@@ -117,7 +117,9 @@ public class UserService implements UserDetailsService {
         userToUpdate.setPhoneNumber(user.getPhoneNumber());
         userToUpdate.setEmail(user.getEmail().toLowerCase());
         userToUpdate.setProfileImageUrl(user.getProfileImageUrl());
-        userToUpdate.setRoles(user.getRoles());
+        if (!user.getRoles().isEmpty()) {
+            userToUpdate.setRoles(user.getRoles());
+        }
 
         addDefaultRoleIfNeeded(userToUpdate);
 
@@ -152,6 +154,11 @@ public class UserService implements UserDetailsService {
         userRepository.delete(id);
     }
 
+    public void deleteAllUsers() {
+        log.info("Deleting all users");
+        userRepository.deleteAll();
+    }
+
     @Override
     public User loadUserByUsername(String email) {
         log.info("loadUserByUsername method from UserService invoked");
@@ -170,7 +177,7 @@ public class UserService implements UserDetailsService {
 
     public void createPasswordResetTokenForUser(User user, String token) {
         PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setUser(user);
+        resetToken.setUser(user.getId());
         resetToken.setToken(token);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
         tokenRepository.save(resetToken);
@@ -184,7 +191,7 @@ public class UserService implements UserDetailsService {
             return false;
         }
 
-        User user = resetToken.getUser();
+        User user = userRepository.findOne(resetToken.getUser());
         if (!user.getEmail().equals(email)) {
             log.info("Token is invalid");
             return false;

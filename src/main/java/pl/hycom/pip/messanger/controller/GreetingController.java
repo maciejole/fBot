@@ -51,7 +51,7 @@ import pl.hycom.pip.messanger.service.GreetingService;
 public class GreetingController {
 
     protected static final String VIEW_GREETINGS = "greetings";
-    private static final String ADMIN_GREETINGS = "/admin/greetings";
+    static final String ADMIN_GREETINGS = "/admin/greetings";
     protected static final String REDIRECT_ADMIN_GREETINGS = "redirect:" + ADMIN_GREETINGS;
 
     private static final String DEFAULT_LOCALE = "default";
@@ -110,7 +110,7 @@ public class GreetingController {
             prepareModel(model);
             String message = getMessage("greetings.invalidOperation");
             model.addAttribute("errors", Collections.singletonList(message));
-            return VIEW_GREETINGS;
+            return REDIRECT_ADMIN_GREETINGS;
         }
 
         try {
@@ -118,9 +118,10 @@ public class GreetingController {
             log.info("Deleting greeting succeeded");
         } catch (MessengerApiException | MessengerIOException e) {
             log.info("Deleting greeting failed", e);
+            model.addAttribute("errors", Collections.singletonList(getMessage("greetings.invalidOperation")));
         }
 
-        return VIEW_GREETINGS;
+        return REDIRECT_ADMIN_GREETINGS;
     }
 
     private String getMessage(String messageCode, Object... args) {

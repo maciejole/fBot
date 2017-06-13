@@ -115,8 +115,7 @@ public class KeywordControllerTest {
     public void deleteById() throws Exception {
         int id = list.get(2);
         mockMvc.perform(delete("/admin/keywords/" + id + "/delete"))
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/admin/keywords"));
+                .andExpect(status().isOk());
     }
 
     @Test
