@@ -15,6 +15,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -28,6 +30,7 @@ import lombok.NonNull;
 @Data
 @Entity
 @Table(name = "USERS")
+@OnDelete(action = OnDeleteAction.CASCADE)
 @NoArgsConstructor
 public class User implements UserDetails {
 
@@ -49,7 +52,6 @@ public class User implements UserDetails {
     @Pattern(regexp = "^\\p{L}{2,40}$")
     private String lastName;
 
-    @NonNull
     @NotNull
     @Column(length = 40, unique = true)
     @Size(min = 6, max = 40)
