@@ -177,7 +177,7 @@ public class UserService implements UserDetailsService {
 
     public void createPasswordResetTokenForUser(User user, String token) {
         PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setUser(user.getId());
+        resetToken.setUser(user);
         resetToken.setToken(token);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
         tokenRepository.save(resetToken);
@@ -191,7 +191,7 @@ public class UserService implements UserDetailsService {
             return false;
         }
 
-        User user = userRepository.findOne(resetToken.getUser());
+        User user = userRepository.findOne(resetToken.getUser().getId());
         if (!user.getEmail().equals(email)) {
             log.info("Token is invalid");
             return false;
