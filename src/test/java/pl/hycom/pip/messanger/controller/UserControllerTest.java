@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -49,8 +50,6 @@ public class UserControllerTest {
 
     @Autowired
     private UserService userService;
-
-    private List<Integer> IdList = new ArrayList<>();
 
     private User user;
     private User user1;
@@ -84,6 +83,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username="admin",roles={"USER","ADMIN"})
     public void pageFoundTest() throws Exception {
         mockMvc.perform(get("/admin/users"))
                 .andExpect(status().isOk());
@@ -97,6 +97,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username="admin",roles={"USER","ADMIN"})
     public void getAllKeywords() throws Exception {
 
         mockMvc.perform(get("/admin/users"))
@@ -104,20 +105,20 @@ public class UserControllerTest {
                 .andExpect(view().name("users"))
                 .andExpect(model().attribute("users", hasSize(3)))
                 .andExpect(model().attribute("users", hasItem(allOf(
-                        hasProperty("id", Is.is(IdList.get(0))),
-                        hasProperty("lastname", Is.is("Lastname")),
-                        hasProperty("email", Is.is("mail@example.com")),
-                        hasProperty("name", Is.is("Name"))))))
-                .andExpect(model().attribute("users", hasItem(allOf(
-                        hasProperty("id", Is.is(IdList.get(0))),
-                        hasProperty("lastname", Is.is("Lastnamee")),
-                        hasProperty("email", Is.is("mail1@example.com")),
-                        hasProperty("name", Is.is("Name1"))))))
-                .andExpect(model().attribute("users", hasItem(allOf(
-                        hasProperty("id", Is.is(IdList.get(0))),
-                        hasProperty("lastname", Is.is("Lastnameee")),
-                        hasProperty("email", Is.is("mail2@example.com")),
-                        hasProperty("name", Is.is("Name2"))))));
+                        hasProperty("id", Is.is(user.getId())),
+                        hasProperty("lastName", Is.is(user.getLastName())),
+                        hasProperty("email", Is.is(user.getEmail())),
+                        hasProperty("firstName", Is.is(user.getFirstName()))))))
+               .andExpect(model().attribute("users", hasItem(allOf(
+                       hasProperty("id", Is.is(user1.getId())),
+                       hasProperty("lastName", Is.is(user1.getLastName())),
+                       hasProperty("email", Is.is(user1.getEmail())),
+                       hasProperty("firstName", Is.is(user1.getFirstName()))))))
+               .andExpect(model().attribute("users", hasItem(allOf(
+                       hasProperty("id", Is.is(user2.getId())),
+                       hasProperty("lastName", Is.is(user2.getLastName())),
+                       hasProperty("email", Is.is(user2.getEmail())),
+                       hasProperty("firstName", Is.is(user2.getFirstName()))))));
     }
 
     @After
