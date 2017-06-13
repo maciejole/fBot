@@ -44,7 +44,7 @@ import pl.hycom.pip.messanger.service.ProductService;
 @Log4j2
 public class KeywordController {
 
-    private static final String KEYWORDS_VIEW = "keywords";
+    static final String KEYWORDS_VIEW = "keywords";
 
     private final KeywordService keywordService;
     private final ProductService productService;
