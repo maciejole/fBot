@@ -46,7 +46,7 @@ public class AdminControllerTest {
 
     @Test
     public void PageNotFoundTest() throws Exception {
-        mockMvc.perform(get("/user"))
+        mockMvc.perform(get("/noadmin"))
                 .andExpect(status().isNotFound());
     }
 

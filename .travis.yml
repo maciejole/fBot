@@ -14,4 +14,4 @@ cache:
 
 branches:
  only:
- - master
+ - developer

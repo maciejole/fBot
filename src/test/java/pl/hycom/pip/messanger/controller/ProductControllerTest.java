@@ -58,6 +58,9 @@ public class ProductControllerTest {
     private ProductService productService;
 
     @Autowired
+    private KeywordService keywordService;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired

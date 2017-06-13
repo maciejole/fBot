@@ -60,8 +60,9 @@ public class GreetingControllerTest {
     @Test
     public void getGreetingsTest() throws MessengerApiException, MessengerIOException {
         // given
-        GreetingsProfileResponse resp = new GreetingsProfileResponse("result", new Greeting[] { greeting });
-        when(profileClient.getWelcomeMessage()).thenReturn(resp);
+        //GreetingsProfileResponse resp = new GreetingsProfileResponse("result", new Greeting[] { greeting });
+        //when(profileClient.getWelcomeMessage()).thenReturn(resp);
+        when(greetingService.getGreetingsWithDefaultLocale()).thenReturn(Collections.singletonList(greeting));
 
         // when
         final String resultView = controller.getGreetings(model);
@@ -77,9 +78,9 @@ public class GreetingControllerTest {
 
         // greetingWrapper should be:
         final GreetingListWrapper wrapper = (GreetingListWrapper) map.get("greetingListWrapper");
-        assertThat(wrapper.getGreetings().size()).isEqualTo(2);
+        assertThat(wrapper.getGreetings().size()).isEqualTo(1);
         assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.controller.model.Greeting(greeting));
-        assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.controller.model.Greeting(new Greeting("")));
+        //assertThat(wrapper.getGreetings()).contains(new pl.hycom.pip.messanger.controller.model.Greeting(new Greeting("")));
 
         // locale list should be:
         final Map<String, String> availableLocale = (Map<String, String>) map.get("availableLocale");
