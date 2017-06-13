@@ -1,5 +1,6 @@
 package pl.hycom.pip.messanger.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -43,9 +44,9 @@ public class GreetingControllerIntegrationTest {
     public void removeGreetingTest() throws Exception {
         String locale = "pl_PL";
 
-        this.mockMvc.perform(get("/admin/deleteGreeting/" + locale))
+        this.mockMvc.perform(delete("/admin/deleteGreeting/" + locale))
                 .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/admin/greetings"));
+                .andExpect(view().name(GreetingController.REDIRECT_ADMIN_GREETINGS));
     }
 
 }
