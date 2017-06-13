@@ -23,23 +23,23 @@ import java.util.List;
 @Log4j2
 public class SendKeywordQuestionProcessor implements PipelineProcessor {
 
+    private static final Gson GSON = new Gson();
+
     @Autowired
     private MessengerSendClient sendClient;
 
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
         log.info("Started process of SendKeywordQuestionProcessor");
-        StringBuilder messageBuilder = new StringBuilder();
 
-        String id = ctx.get(SENDER_ID, String.class);
         Keyword keywordToBeAsked = ctx.get(KEYWORD_TO_BE_ASKED, Keyword.class);
         List<Keyword> keywords = ctx.get(KEYWORDS, List.class);
         List<Keyword> excludedKeywords = ctx.get(KEYWORDS_EXCLUDED, List.class);
-        String message = messageBuilder.append("Znaleziono za duzo wynikow, czy jestes zainteresowany produktem ktory jest ").append(keywordToBeAsked.getWord()).toString();
         String payload = getPayload(keywords, excludedKeywords, keywordToBeAsked);
-        List<QuickReply> quickReplies = getQuickReplies(payload);
 
-        sendQuickReply(id, message, quickReplies);
+        String message = "Znaleziono za dużo wyników, czy jesteś zainteresowany produktem który jest " + keywordToBeAsked.getWord() + "?";
+
+        sendQuickReply(ctx.get(SENDER_ID, String.class), message, getQuickReplies(payload));
 
         return 1;
     }
@@ -48,8 +48,9 @@ public class SendKeywordQuestionProcessor implements PipelineProcessor {
         try {
             sendClient.sendTextMessage(id, message, quickReplies);
             logPayload(quickReplies);
+
         } catch (MessengerApiException | MessengerIOException e) {
-            log.error(e.getMessage());
+            log.error("Error sending quick reply", e);
         }
     }
 
@@ -65,8 +66,6 @@ public class SendKeywordQuestionProcessor implements PipelineProcessor {
     }
 
     private String getPayload(List<Keyword> keywords, List<Keyword> excludedKeywords, Keyword keywordToBeAsked) {
-        Gson gson = new Gson();
-        Payload payload = new Payload(keywords, excludedKeywords, keywordToBeAsked);
-        return gson.toJson(payload);
+        return GSON.toJson(new Payload(keywords, excludedKeywords, keywordToBeAsked));
     }
 }

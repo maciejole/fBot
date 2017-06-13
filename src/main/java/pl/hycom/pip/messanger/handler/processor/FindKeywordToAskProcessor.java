@@ -16,7 +16,6 @@
 
 package pl.hycom.pip.messanger.handler.processor;
 
-import java.security.InvalidParameterException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +40,6 @@ import pl.hycom.pip.messanger.repository.model.Product;
 @Log4j2
 public class FindKeywordToAskProcessor implements PipelineProcessor {
 
-    public static final int SEND_KEYWORD_QUESTION = 1;
-    public static final int SEND_PRODUCTS_MESSAGE = 2;
-
     @Override
     public int runProcess(PipelineContext ctx) throws PipelineException {
         log.info("Started finding keyword used in half of Products");
@@ -57,11 +53,11 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
         if (keywordToBeAsked.isPresent()) {
             ctx.put(KEYWORD_TO_BE_ASKED, keywordToBeAsked.get());
             log.info("Added keywordToBeAsked: " + keywordToBeAsked.get().getWord());
-            return SEND_KEYWORD_QUESTION;
         } else {
             log.info("No keyword to be asked could be found");
-            return SEND_PRODUCTS_MESSAGE;
         }
+
+        return 1;
     }
 
     /**
@@ -70,9 +66,9 @@ public class FindKeywordToAskProcessor implements PipelineProcessor {
      *            Keywordy, które zostały wyciągnięte z zapytań
      * @return null if no keyword found
      */
-    Optional<Keyword> findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) {
+    Optional<Keyword> findKeywordToAsk(List<Product> products, List<Keyword> wantedKeywords) throws PipelineException {
         if (CollectionUtils.isEmpty(products)) {
-            throw new InvalidParameterException("Products cannot be null or empty");
+            throw new PipelineException("Products cannot be null or empty");
         }
 
         int desiredCount = products.size() / 2;

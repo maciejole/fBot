@@ -54,7 +54,7 @@ public class GenerateMessageProcessor implements PipelineProcessor {
         String senderId = ctx.get(SENDER_ID, String.class);
 
         if (CollectionUtils.isEmpty(products)) {
-            sendTextMessage(senderId, "No products found.");
+            sendTextMessage(senderId, "Nie znaleziono takich produktów.");
             return 1;
         }
 

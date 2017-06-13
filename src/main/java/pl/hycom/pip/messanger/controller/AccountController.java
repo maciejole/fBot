@@ -1,7 +1,6 @@
 package pl.hycom.pip.messanger.controller;
 
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.MapperFacade;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.exception.SecurityException;
 import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.UserService;
@@ -62,7 +62,7 @@ public class AccountController {
     }
 
     @PostMapping("/user/account/update")
-    public String updateAccount(@Valid UserDTO user, BindingResult bindingResult, Model model, HttpServletRequest request) {
+    public String updateAccount(@Valid UserDTO user, BindingResult bindingResult, Model model, @AuthenticationPrincipal User currentUser) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("user", user);
             model.addAttribute("errors", bindingResult.getFieldErrors());
@@ -72,13 +72,20 @@ public class AccountController {
 
         try {
             userService.addOrUpdateUser(user);
-        } catch (EmailNotUniqueException e) {
+        } catch (EmailNotUniqueException | SecurityException e) {
+            log.warn("Error during user update", e);
+
             model.addAttribute("user", user);
             model.addAttribute("error", new ObjectError("validation.error.user.exists", "Użytkownik z takim adresem email już istnieje."));
             return ACCOUNT_VIEW;
         }
 
-        return "redirect:/user/account/" + user.getId();
+        if (currentUser != null) {
+            return user.getId().equals(currentUser.getId()) ? "redirect:/user/account" : "redirect:/user/account/" + user.getId();
+        }
+
+        log.info(" There is no user logged in");
+        return "redirect:/admin";
     }
 
 }

@@ -1,8 +1,6 @@
 package pl.hycom.pip.messanger.controller;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -19,13 +17,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import pl.hycom.pip.messanger.controller.model.RoleDTO;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.exception.SecurityException;
 import pl.hycom.pip.messanger.repository.model.Role;
 import pl.hycom.pip.messanger.repository.model.User;
 import pl.hycom.pip.messanger.service.RoleService;
@@ -65,7 +63,9 @@ public class UserController {
         try {
             userService.addOrUpdateUser(user);
             return "redirect:/admin/users";
-        } catch (EmailNotUniqueException e) {
+        } catch (EmailNotUniqueException | SecurityException e) {
+            log.warn("Error during user update", e);
+
             prepareModel(model, user);
             model.addAttribute("error", new ObjectError("validation.error.user.exists", "Użytkownik z takim adresem email już istnieje."));
             return USERS_VIEW;

@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +29,7 @@ import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.MapperFacade;
 import pl.hycom.pip.messanger.controller.model.UserDTO;
 import pl.hycom.pip.messanger.exception.EmailNotUniqueException;
+import pl.hycom.pip.messanger.exception.SecurityException;
 import pl.hycom.pip.messanger.repository.PasswordResetTokenRepository;
 import pl.hycom.pip.messanger.repository.RoleRepository;
 import pl.hycom.pip.messanger.repository.UserRepository;
@@ -79,7 +81,7 @@ public class UserService implements UserDetailsService {
         return orikaMapper.map(userRepository.findOne(id), UserDTO.class);
     }
 
-    public UserDTO addOrUpdateUser(UserDTO user) throws EmailNotUniqueException {
+    public UserDTO addOrUpdateUser(UserDTO user) throws EmailNotUniqueException, SecurityException {
         User userToUpdateOrAdd = orikaMapper.map(user, User.class);
         if (user.getId() != null && user.getId() != 0) {
             return orikaMapper.map(updateUser(userToUpdateOrAdd), UserDTO.class);
@@ -101,7 +103,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User updateUser(User user) throws EmailNotUniqueException {
+    public User updateUser(User user) throws EmailNotUniqueException, SecurityException {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (currentUser == null || (!currentUser.getRoles().stream().filter(r -> StringUtils.equals(Role.Name.ADMIN, r.getAuthority())).findFirst().isPresent() && !currentUser.getId().equals(user.getId()))) {
+            throw new SecurityException("Current user[" + currentUser + "] is not ADMIN and is different than user to update[" + user + "]");
+        }
+
         log.info("Updating user: " + user);
         User userToUpdate = userRepository.findOne(user.getId());
         userToUpdate.setFirstName(user.getFirstName());
@@ -113,7 +121,6 @@ public class UserService implements UserDetailsService {
 
         addDefaultRoleIfNeeded(userToUpdate);
 
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         boolean isCurrentAccount = user.getId().equals(currentUser.getId());
         return trySaveUser(userToUpdate, false, isCurrentAccount);
     }
@@ -132,10 +139,11 @@ public class UserService implements UserDetailsService {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+
             return userToSave;
 
         } catch (DataIntegrityViolationException e) {
-            throw new EmailNotUniqueException(e.getCause());
+            throw new EmailNotUniqueException(e);
         }
     }
 
@@ -213,8 +221,6 @@ public class UserService implements UserDetailsService {
 
     @Scheduled(fixedDelay = 5 * 60 * 1000) // every 5 minutes
     public void deleteExpiredTokens() {
-        log.info("deleteExpiredTokens method from Scheduler invoked");
-
         Long numberOfDeletedTokens = tokenRepository.deleteByExpiryDateLessThan(LocalDateTime.now());
 
         log.info("Deleted[" + numberOfDeletedTokens + "] old tokens");
