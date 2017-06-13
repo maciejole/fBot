@@ -40,32 +40,32 @@ import java.util.stream.StreamSupport;
 @Service
 @Configuration(value = "nlpService")
 public class NlpService {
-
-
+    
+    
     private KeywordService keywordService;
     private ResultRepository resultRepository;
-
+    
     @Autowired
     ResultService resultService;
-
+    
     @Autowired
     private MapperFacade orikaMapper;
-
+    
     private static final String NLPrestURL = "http://ws.clarin-pl.eu/nlprest2/base/";
-
+    
     // wysyłamy wiadomość do analizy
     public String nlpStringSender(String messageToBeAnalyze) throws IOException {
         log.info("Method to analyzing text was called: '{}' " + messageToBeAnalyze);
         return ClientBuilder.newClient().target(NLPrestURL + "upload").request().post(Entity.entity(messageToBeAnalyze, MediaType.TEXT_PLAIN)).readEntity(String.class);
-
+        
     }
-
+    
     public List<Result> inputStreamToResultList(InputStream is) {
         List<ResultDTO> resultList = new ArrayList<ResultDTO>();
         try {
-
+            
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
+            
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setEntityResolver(new EntityResolver() {
                 @Override
@@ -76,18 +76,17 @@ public class NlpService {
             Document doc = builder.parse(is);
             NodeList baselist = doc.getElementsByTagName("orth");
             NodeList results = doc.getElementsByTagName("base");
-            for ( int i=0 ; i< baselist.getLength() ; i++   ) {
-                resultList.add(new ResultDTO(baselist.item(i).getTextContent(),results.item(i).getTextContent()));
+            for (int i = 0; i < baselist.getLength(); i++) {
+                resultList.add(new ResultDTO(baselist.item(i).getTextContent(), results.item(i).getTextContent()));
             }
-
+            
         } catch (Exception ex) {
             log.error("Exception, with message: '" + ex.getMessage() + "' occured while deserializing response to Result object. Deserialized result is: " + resultList, ex);
         }
         return orikaMapper.mapAsList(StreamSupport.stream(resultList.spliterator(), false).collect(Collectors.toList()), Result.class);
     }
-
-
-
+    
+    
     public List<Result> nlpGetOutput(String id) throws IOException {
         URL url = new URL(NLPrestURL + "download" + id);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -95,27 +94,27 @@ public class NlpService {
         conn.setRequestMethod("GET");
         return inputStreamToResultList(conn.getInputStream());
     }
-
-
+    
+    
     public String getRes(Response res) throws IOException {
         if (res.getStatus() != 200) {
             throw new IOException("Error in nlprest processing");
         }
         return res.readEntity(String.class);
-
+        
     }
     
     public JSONObject prepareRequest(String id) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("file", id);
-        jsonObject.put("tool" , "liner2");
+        jsonObject.put("tool", "liner2");
         JSONObject options = new JSONObject();
-        options.put("model" , "top9");
-        jsonObject.put("options" ,options );
+        options.put("model", "top9");
+        jsonObject.put("options", options);
         return jsonObject;
         
     }
-
+    
     public String nlpProcess(String id) throws IOException, InterruptedException, JSONException {
         Client client = ClientBuilder.newClient();
         String taskid = null;
@@ -123,7 +122,7 @@ public class NlpService {
             taskid = client.target(NLPrestURL + "startTask").request().
                     post(Entity.entity(prepareRequest(id).toString(), MediaType.APPLICATION_JSON)).readEntity(String.class);
         } catch (JSONException ex) {
-            log.error("Error " + ex.getMessage() + "ocurred during passing JSONObject" , ex);
+            log.error("Error " + ex.getMessage() + "ocurred during passing JSONObject", ex);
         }
         String status = "";
         JSONObject jsonResp = new JSONObject();
@@ -132,33 +131,32 @@ public class NlpService {
             jsonResp = new JSONObject(res);
             status = jsonResp.getString("status");
             if (("ERROR").equals(status)) {
-                throw new IOException("Error in processing data" + "task id" +  taskid );
+                throw new IOException("Error while processing request to: '" + NLPrestURL + "getStatus/" + taskid + "'. Received error as status. Response: " + res);
             }
         }
         return jsonResp.getJSONArray("value").getJSONObject(0).getString("fileID");
     }
-
-
+    
+    
     public List<Result> analyze(String message) {
         List<Result> resultList = new ArrayList<>();
         try {
             String id = nlpStringSender(message);
             id = nlpProcess(id);
-            resultList.addAll(nlpGetOutput(id));
-            resultService.addResult(resultList);
-   
+            if (!id.isEmpty()) {
+                resultList.addAll(nlpGetOutput(id));
+                resultService.addResult(resultList);
+            }
         } catch (IOException | JSONException ex) {
             log.error("Exception in analyze method caused by " + ex.getMessage(), ex);
-
+            
         } catch (InterruptedException e) {
             log.error("Exception in analyze method caused by " + e.getMessage(), e);
-
+            
         }
         return resultList;
     }
-
-
-
-
+    
+    
 }
 
