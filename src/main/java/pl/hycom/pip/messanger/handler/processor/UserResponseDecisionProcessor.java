@@ -1,10 +1,13 @@
 package pl.hycom.pip.messanger.handler.processor;
 
+import org.springframework.stereotype.Component;
+
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 import pl.hycom.pip.messanger.repository.model.Keyword;
 
+@Component
 public class UserResponseDecisionProcessor implements PipelineProcessor {
 
     public static final int SEND_KEYWORD_QUESTION = 1;

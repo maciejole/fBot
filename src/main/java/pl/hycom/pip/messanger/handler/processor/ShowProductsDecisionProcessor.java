@@ -3,12 +3,14 @@ package pl.hycom.pip.messanger.handler.processor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import pl.hycom.pip.messanger.pipeline.PipelineContext;
 import pl.hycom.pip.messanger.pipeline.PipelineException;
 import pl.hycom.pip.messanger.pipeline.PipelineProcessor;
 import pl.hycom.pip.messanger.repository.model.Product;
 
+@Component
 public class ShowProductsDecisionProcessor implements PipelineProcessor {
 
     private static final int SHOW_PRODUCTS = 1;
