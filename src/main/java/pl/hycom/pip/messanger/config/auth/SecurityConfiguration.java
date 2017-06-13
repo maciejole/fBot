@@ -44,7 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/account/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").failureUrl("/login-error").permitAll();
+                .formLogin().loginPage("/login").failureUrl("/login-error").successForwardUrl("/").permitAll();
     }
 
     @Override
