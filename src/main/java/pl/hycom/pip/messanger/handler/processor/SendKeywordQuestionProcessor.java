@@ -37,7 +37,7 @@ public class SendKeywordQuestionProcessor implements PipelineProcessor {
         List<Keyword> excludedKeywords = ctx.get(KEYWORDS_EXCLUDED, List.class);
         String payload = getPayload(keywords, excludedKeywords, keywordToBeAsked);
 
-        String message = "Znaleziono za duzo wynikow, czy jestes zainteresowany produktem ktory jest " + keywordToBeAsked.getWord() + "?";
+        String message = "Znaleziono za dużo wyników, czy jesteś zainteresowany produktem który jest " + keywordToBeAsked.getWord() + "?";
 
         sendQuickReply(ctx.get(SENDER_ID, String.class), message, getQuickReplies(payload));
 
