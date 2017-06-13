@@ -117,7 +117,9 @@ public class UserService implements UserDetailsService {
         userToUpdate.setPhoneNumber(user.getPhoneNumber());
         userToUpdate.setEmail(user.getEmail().toLowerCase());
         userToUpdate.setProfileImageUrl(user.getProfileImageUrl());
-        userToUpdate.setRoles(user.getRoles());
+        if(!user.getRoles().isEmpty()) {
+            userToUpdate.setRoles(user.getRoles());
+        }
 
         addDefaultRoleIfNeeded(userToUpdate);
 
