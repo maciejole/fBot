@@ -25,7 +25,10 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +144,6 @@ public class ProductDTOServiceTest {
         product3.addKeyword(keyword3);
     }
 
-
     @Test
     public void addProductWithKeywordsTest() {
         log.info("Test of addProduct method from ProductService class");
@@ -224,7 +226,6 @@ public class ProductDTOServiceTest {
         assertEquals("size of returned list should be equal to the value of getRandomProducts parameter - 4", 4, productService.getRandomProducts(4).size());
     }
 
-    @Ignore
     @Test
     @Transactional
     public void addKeywordToProductTest() {
