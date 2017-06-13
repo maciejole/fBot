@@ -31,6 +31,7 @@ import lombok.NonNull;
 @Entity
 @Table(name = "USERS")
 @OnDelete(action = OnDeleteAction.CASCADE)
+@NoArgsConstructor
 public class User implements UserDetails {
 
     private static final long serialVersionUID = -8309188613893942860L;
