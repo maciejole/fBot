@@ -195,7 +195,7 @@
 				<configuration>
 					<header>src/main/resources/license-header.txt</header>
 					<includes>
-						<include>**/java/**</include>
+						<include>**/java/**/*.java</include>
 						<include>**/static/**</include>
 						<include>**/templates/**</include>
 					</includes>
