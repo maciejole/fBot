@@ -17,4 +17,4 @@ branches:
  - developer
 
 notifications:
- slack: fbot-team-o:jBl3AgI06A11RFN7wlEu4mMD
+ slack: ${SLACK_INTEGRATION}
